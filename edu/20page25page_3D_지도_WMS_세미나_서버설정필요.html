@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<!-- 
+	WebGL 3D 지도 검색 API 결과에 마커 생성
+ -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>3D 지도생성 </title>
+<script type="text/javascript"
+src="https://map.vworld.kr/js/webglMapInit.js.do?version=2.0&apiKey=CEB52025-E065-364C-9DBA-44880E3B02B8"></script>
+</head>
+
+<body>
+	<div> 	
+		<input type="checkbox" name="LP_PA_CBND_BUBUN"> 브이월드 WMS 지적도
+		<input type="checkbox" name="lx_land"> 외부 지적도 WMS
+		<input type="checkbox" name="lx_BASE"> 국토정보기본도 WMS
+		<input type="checkbox" name="safemap"> 생활안전지도 WMS
+		<input type="checkbox" name="lt_c_aisresc"> 비행제한
+		<input type="checkbox" name="its_geo"> 교통량정보 WMTS(on/off)
+		<input type="checkbox" name="Midnignt"> 미드나잇 WMTS(on/off)
+
+	</div>
+	<div id="vmap" style="float: left; width: 1000px; height: 600px;"></div>
+	
+	<div style="clear: both; word-break:break-all; width: 800px;">
+		<a href="javascript:move(128.27257645686538, 35.6693191731768,500);" >지적도 이슈지역</a> 
+	</div>
+	
+
+<script type="text/javascript">
+
+	let mapOptions = new vw.MapOptions(
+		vw.BasemapType.GRAPHIC, //2D 전용
+		"", //layersArr 미사용 옵션
+		vw.DensityType.FULL, //controlsDensity 2D 전용
+		vw.DensityType.BASIC, //interactionDensity 2D 전용
+		false , //controlAutoArrange 2D 전용
+		new vw.CameraPosition(
+			new vw.CoordZ(126.92775802528264, 37.52501881993892, 12416), //초기 위치 설정(경도, 위도, 높이 값)   
+			new vw.Direction(0, -90, 0)
+		), //home
+		new vw.CameraPosition(
+			new vw.CoordZ(126.92775802528264, 37.52501881993892, 12416), //초기 위치 설정(경도, 위도, 높이 값)   
+			new vw.Direction(0, -90, 0)
+		)// initPosition
+	);
+	let map = new vw.Map("vmap", mapOptions);;        
+
+$(function(){
+	$(document).on('click','[type=checkbox]',function(){
+
+		this_val = $(this).attr("name");
+			if($(this).attr("name")=="LP_PA_CBND_BUBUN"||$(this).attr("name")=="lt_c_aisresc"){ //비행금지구역이나 지적도인 경우 처리
+				var layerUrl ="https://api.vworld.kr/req/wms?key=CEB52025-E065-364C-9DBA-44880E3B02B8&domain=http://localhost:8080";
+				var layerName = $(this).attr("name")=="LP_PA_CBND_BUBUN"? "lp_pa_cbnd_bubun,lp_pa_cbnd_bonbun" : this_val.toLowerCase();
+				var style = $(this).attr("name")=="LP_PA_CBND_BUBUN"? "lp_pa_cbnd_bubun_webgl,lp_pa_cbnd_bonbun_webgl" : this_val.toLowerCase();
+				
+				if( $(this).is(":checked")){
+					if(map.getElementById(layerName)==null){
+						addWMS_WebGL(layerName,style,layerUrl,layerName);
+					}else{
+						map.getElementById(layerName).show()
+					}	
+				
+				}else if( !$(this).is(":checked")){
+					if(map.getElementById(layerName)!=null){
+						map.getElementById(layerName).hide()
+					}
+				}
+
+			}else if ($(this).attr("name")=="lx_land"){ // LX 지적도 
+
+				var layerUrl ="http://openapi.nsdi.go.kr/nsdi/map/CtnlgsSpceService?authkey=df4ea49109779290a44b99&backColor=0xFFFFFF";
+				var ids = "lx_land";
+
+				if( $(this).is(":checked")){
+					if(map.getElementById(ids)==null){
+						addWMS_WebGL("","",layerUrl,ids);
+					}else{
+						map.getElementById(ids).show()
+					}	
+				
+				}else if( !$(this).is(":checked")){
+					if(map.getElementById(ids)!=null){
+						map.getElementById(ids).hide()
+					}
+				}
+				
+			}else if ($(this).attr("name")=="safemap"){ // 생활안전지도
+
+				var layerUrl ="http://116.67.75.155:8080/geoserver/safemap/wms?";
+				var layerName = "A2SM_HEATWAVE"
+				var ids = layerName;
+				if( $(this).is(":checked")){
+					if(map.getElementById(layerName)==null){
+						addWMS_WebGL(layerName,"",layerUrl,ids);
+					}else{
+						map.getElementById(ids).show()
+					}	
+				
+				}else if( !$(this).is(":checked")){
+					if(map.getElementById(ids)!=null){
+						map.getElementById(ids).hide()
+					}
+				}
+
+			}else if ($(this).attr("name")=="lx_BASE"){ // 국가공간정보 기본도
+
+				
+				var layerUrl ="http://openapi.nsdi.go.kr/nsdi/map/LandInfoBaseMapUTMKBlueService?authkey=aed1f1084e775267d81d20";
+				var layerName = "A2SM_HEATWAVE"
+				var ids = "lx_BASE";
+				if( $(this).is(":checked")){
+					if(map.getElementById(ids)==null){
+						addWMS_WebGL("0","",layerUrl,ids);
+					}else{
+						map.getElementById(ids).show()
+					}	
+				
+				}else if( !$(this).is(":checked")){
+					if(map.getElementById(ids)!=null){
+						map.getElementById(ids).hide()
+					}
+				}
+
+			}else if($(this).attr("name")=="its_geo"){ //WMTS 
+
+				var layerUrl ="https://its.go.kr:9443/geoserver/gwc/service/wmts/rest/ntic:N_LEVEL_11/ntic:REALTIME/EPSG:3857/EPSG:3857:{z}/{y}/{x}?format=image/png";
+				var layerName = "its_geo"
+				if( $(this).is(":checked")){
+					if(map.getLayerNmElement("its_geo")==null){
+						addWMTS_WebGL(layerName,layerUrl);
+					}else{
+						map.getLayerNmElement("its_geo").show()
+					}	
+				
+				}else if( !$(this).is(":checked")){
+					if(map.getLayerNmElement("its_geo")!=null){
+						map.getLayerNmElement("its_geo").hide()
+					}
+				}
+
+			}else if($(this).attr("name")=="Midnignt"){ //WMTS 
+
+				var layerUrl ='https://api.vworld.kr/req/wmts/1.0.0/CEB52025-E065-364C-9DBA-44880E3B02B8/midnight/{z}/{y}/{x}.png';
+				var layerName = "midnight"
+				if( $(this).is(":checked")){
+					if(map.getLayerNmElement("midnight")==null){
+						addWMTS_WebGL(layerName,layerUrl);
+					}else{
+						map.getLayerNmElement("midnight").show()
+					}	
+
+				}else if( !$(this).is(":checked")){
+					if(map.getLayerNmElement("midnight")!=null){
+						map.getLayerNmElement("midnight").hide()
+					}
+				}
+			}	
+	});//'change'
+})
+
+var addWMS_WebGL = function(layerName,style,Url,Id){
+	var wmsLayer = new vw.Layers();
+
+	wmsSource = new vw.source.TileWMS();
+	wmsSource.setParams("tilesize=256");
+	wmsSource.setLayers(layerName);
+	wmsSource.setStyles(style);
+
+	wmsSource.setFormat("image/png");
+	wmsSource.setUrl(Url);
+//	wmsSource.setProxy("/proxy.jsp?url=");  // 기본 값 브이월드 프록시 서버, 서버를 통해서 호출 시에만 가시화 !!
+	wmsSource.setID(Id);
+	var wmsTile = new vw.layer.Tile(wmsSource);
+	wmsLayer.add(wmsTile);
+}
+
+var addWMTS_WebGL= function(layerName,layerUrl){
+	var options = {
+        name: layerName,
+        numberOfLevelZeroTilesX : 1,
+        numberOfLevelZeroTilesY : 1,
+        url: layerUrl,
+        hasAlphaChannel: true,  //true => (png포맷 영상타일인 경우-투명부위 처리원할때만 true)
+        minimumLevel: 6,
+        maximumLevel: 19
+    }
+	var wmts = new vw.source.WMTS( options );
+}
+
+
+/** 이동함수 구현
+*/
+let move = function(x,y,z){
+	var movePo = new vw.CoordZ(x,y,z);
+	var mPosi = new vw.CameraPosition(movePo, new vw.Direction(0,-90,0));
+	map.moveTo(mPosi);    
+}
+</script>
+</body>
+</html>

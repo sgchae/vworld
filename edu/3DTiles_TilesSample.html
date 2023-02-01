@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>3D Tiles Set</title>
+<!-- <script type="text/javascript" src="http://localhost:8082/js/webglMapInit.js.do?version=2.0&apiKey=767B7ADF-10BA-3D86-AB7E-02816B5B92E9"></script> -->
+    <!-- 맵엔진 스타일 로딩 -->
+<script type="text/javascript" src="https://map.vworld.kr/js/webglMapInit.js.do?version=2.0&apiKey=767B7ADF-10BA-3D86-AB7E-02816B5B92E9"></script>
+<script src="https://cesium.com/downloads/cesiumjs/releases/1.88/Build/Cesium/Cesium.js"></script>
+</head>
+
+<body>
+<div id="vmap" style="width:99%;height:700px;left:0px;top:0px"></div>
+
+<center>
+<h3>3D Tiles Set</h3>
+<input type="button" value="3DTiles" onclick="javascript:createTiles();"/>&nbsp;&nbsp;
+<input type="button" value="3DTiles비노출" onclick="javascript:deleteTiles();"/>&nbsp;&nbsp;
+</center>
+<script>
+
+    var map;
+        
+    vwmap();
+
+    function vwmap() {
+
+        var mapOptions = new vw.MapOptions(
+        	vw.BasemapType.GRAPHIC, 
+        	"",
+        	vw.DensityType.FULL,
+            vw.DensityType.FULL,
+            false,
+            new vw.CameraPosition(
+                new vw.CoordZ(126.9261285765337,37.52289024305301, 13487000),
+                new vw.Direction(-90, 0, 0)
+            ),
+            new vw.CameraPosition(
+            		new vw.CoordZ(126.9261285765337,37.52289024305301, 4824),
+                new vw.Direction(0, -90, 0)
+            )
+        );
+
+        map = new vw.Map("vmap", mapOptions);
+
+    }
+    
+    function deleteLOD4() {
+        // LOD4 제거함.
+        var lod4Layer = map.getLayerElement("facility_build");
+        if ( lod4Layer != null ) {
+        	console.log("lod4 hide~~");
+        	lod4Layer.hide();
+        }
+    }
+    
+    function deleteTiles() {
+        // LOD4 제거함.
+        var lod4Layer = map.getLayerElement("test001");
+        if ( lod4Layer != null ) {
+        	console.log("test001 hide~~");
+        	lod4Layer.hide();
+        }
+    }
+    
+
+	/**
+	* 2021-05-17. 웹지엘 3D 타일셋 사용법
+	*/
+	// 옵션 항목들..
+	/* options: {
+	    name : String,                                  //이름, 필수입력
+	    url : String,                                   //3d Tile레이어의 url, 필수입력
+	    [underGround : Boolean = false],                //지하객체 여부, 생략시 false(지상), 생략가능
+	    [id : String],                                  //아이디, 생략시 임의값 부여됨,
+	    [visible : Boolean = true],                     //가시화여부, 생략시 true
+	    [noOptimizeGeometricError : Boolean = false]    //런타임 최적화 수행 여부. 생략 가능
+ 	} */
+    
+   let moveRegion = function(x,y,z){
+      // x = x*360/ws3d.common.CesiumMath.TWO_PI
+      // y= y*360/ws3d.common.CesiumMath.TWO_PI;
+
+      x = x*180/3.141592
+      y= y*180/3.141592
+    var movePo = new vw.CoordZ(x,y,z);
+    var mPosi = new vw.CameraPosition(movePo, new vw.Direction(0,-90,0));
+    map.moveTo(mPosi);    
+	}
+
+	function createTiles() {
+ 		deleteLOD4();
+    	var url = "https://xdworld.vworld.kr/TDServer/services/facility_LOD4/Gyeonggi-do/Seongnam-si/tileset.json";
+
+        //url = "1/tileset.json";
+        
+       // url = "TilesetWithRequestVolume/tileset.json"
+
+        var options = {
+                "id" : "test001",        		
+                "name": "테스트", 
+                "url": url,
+                //"noOptimizeGeometricError" : true
+            };
+        console.log("3d options :" , options);
+        
+		var threedLayerElementInstance = new ws3d.common.map.ThreeDTileLayerElement(options);
+		map.addElement(threedLayerElementInstance);	
+/*
+-1.3197209591796106,
+        0.6988424218,
+        -1.3196390408203893,
+        0.6989055782,
+        0,
+        88
+*/
+      moveRegion(-1.3197004795898053, 0.6988582109,88)
+
+      //ws3d.viewer.extend(Cesium.viewerCesium3DTilesInspectorMixin);
+      //var inspectorViewModel = ws3d.viewer.cesium3DTilesInspector.viewModel;
+    } 
+</script>
+</body>
+</html>
+

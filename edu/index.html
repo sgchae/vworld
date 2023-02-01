@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<!-- 3D 브이월드 안성지역 테스트 -->
+<html>
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title>link</title>
+        <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script type="text/javascript">
+var url = "https://api.vworld.kr/req/wfs?key=767B7ADF-10BA-3D86-AB7E-02816B5B92E9&domain=map.vworld.kr&SERVICE=WFS&version=1.1.0&request=GetFeature&TYPENAME=lt_c_adsido&OUTPUT=application/json&SRSNAME=EPSG:4326&BBOX=32.99023555965107,122.73925781249999,38.77121637244272,133.1103515625";
+
+
+        function getData(callback) {
+        // new Promise() 추가
+        return new Promise(function(resolve, reject) {
+            $.get(url, function(response) {
+            // 데이터를 받으면 resolve() 호출
+            resolve(response);
+            });
+        });
+        }
+
+        // getData()의 실행이 끝나면 호출되는 then()
+        getData().then(function(tableData) {
+        // resolve()의 결과 값이 여기로 전달됨
+        console.log(tableData); // $.get()의 reponse 값이 tableData에 전달됨
+        });
+
+</script>
+    <body>
+        <div>
+            <ul>
+                <li><a href="05page_브이월드 지리원 타일 비교_세미나.html" target="_blank">브이월드 지리원 WMTS 비교</a></li>
+                <li><a href="07page_2D지도API_openlayers 차이.html" target="_blank">2D지도 Openlayers 차이</a></li>
+                <li><a href="11page_3D지도에 검색_세미나.html" target="_blank">3D지도 검색 API</a></li>
+                <li><a href="13page_DataAPI_행정구역_세미나.html" target="_blank">Data API 행정구역</a></li>
+                <li><a href="18page25page_2D_지도_WMS_세미나.html" target="_blank">2D지도 WMS</a></li>
+                <li><a href="20page25page_3D_지도_WMS_세미나_서버설정필요.html" target="_blank">3D지도 WMS</a></li>
+                <li><a href="23page_2D_WFS 호출하기_세미나.html" target="_blank">2D지도 WFS</a></li>
+                <li><a href="23page_3D_WFS 호출하기_세미나_서버설정필요.html" target="_blank">3D지도 WFS</a></li>
+                <li><a href="33page_역지오코더_세미나.html" target="_blank">역지오코더 </a></li>
+                <li><a href="37page_3D_model_가시화_서버설정필요.html" target="_blank">3D모델 가시화</a></li>
+                <li><a href="37page_3D_model_가시화_이벤트추가.html" target="_blank">3D모델 event</a></li>
+                <li><a href="화면내 CCTV 영상 연계.html" target="_blank">화면내 CCTV 영상 연계</a></li>
+				<li><a href="indool.html" target="_blank">진흥원실내지도</a></li>
+                <li><a href="3DTiles_TilesSample.html" target="_blank">3D TilesSample</a></li>
+            </ul>
+        </div>
+    </body>
+</html>

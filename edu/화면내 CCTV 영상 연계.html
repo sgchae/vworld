@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>화면 내 CCTV 조회</title>
+	<script type="text/javascript" src="https://map.vworld.kr/js/webglMapInit.js.do?version=2.0&apiKey=767B7ADF-10BA-3D86-AB7E-02816B5B92E9&domain=localhost:8086"></script>
+	<script type="text/javascript" src="hls.js"></script>
+
+</head>
+
+<body>
+<div id="vmap" style="width:99%; height: 900px;left:0px;top:0px"></div>
+<div style="position: absolute;top: 10px;background: white;width: 400px;height: 300px;">
+	<input type="button"  id="cctv" onclick="loadcctv();" value="CCTV 조회"> 
+	Extent:
+	<p id="cdata_code"></p> 
+	<div class="search_wrap" id="anly_vid" style="display:none">
+	<span style="
+					background: #f6f7f9;
+					text-align: center;
+					font-size: 14px;
+					font-weight: 700;
+					display: block;
+					height: 20px;
+					border-right: 1px solid #d5d5d5;
+					color: #6a707e;" id="vidName">[경인선] 신월2</span>
+		<div id="result_lnbmenu7">
+			<video id="video_target" width="316px;" src="" style="margin:10px 35px;"></video>
+		</div>
+	</div>
+</div>
+
+
+<script>
+    var map;
+	var mapOptions = new vw.MapOptions(
+			vw.BasemapType.GRAPHIC,
+			"",
+			vw.DensityType.FULL,
+			vw.DensityType.BASIC,
+			false,
+			new vw.CameraPosition(
+				new vw.CoordZ(127.1001854, 37.3904385, 13487),
+				new vw.Direction(-90, 0, 0)
+			),
+			new vw.CameraPosition(
+				new vw.CoordZ(127.1001854, 37.3904385, 4800),  
+				new vw.Direction(0, -90, 0)
+			)
+		);
+	
+	map = new vw.Map("vmap", mapOptions);
+	
+	//지도 초기화 후 실행
+	vw.ws3dInitCallBack = function() {
+		var z;
+		var test01 = function() {
+			var viewRect = ws3d.viewer.scene.camera.computeViewRectangle();
+			var _html = "";
+			var West = ws3d.common.CesiumMath.toDegrees(viewRect.west).toFixed(7) //long min
+			var South = ws3d.common.CesiumMath.toDegrees(viewRect.south).toFixed(7) //lan min
+			var East = ws3d.common.CesiumMath.toDegrees(viewRect.east).toFixed(7) //long max
+			var North = ws3d.common.CesiumMath.toDegrees(viewRect.north).toFixed(7) //lan max
+			
+			position = map.getCurrentPosition().position
+			z = position.z
+			console.log(z);
+
+			//makeLine(West,South,East,North,z);
+			// z 가 <10000 미만이면 구현 
+
+			_html = ` West:${West} 
+					South:${South}  
+					East:${East} 
+					North:${North} `;
+
+			$("#cdata_code").html(_html);
+		}
+		vw.EventProcess.add( "test01", map.onMoveEnd, test01 );
+		
+	};
+	
+	var callback = function(data) {
+		console.log(data);
+	};
+    var resultAjax = false;
+	//cctv 목록 조회
+	var pointGroup;
+	var loadcctv = function(){
+		var viewRect = ws3d.viewer.scene.camera.computeViewRectangle();
+		var West = ws3d.common.CesiumMath.toDegrees(viewRect.west).toFixed(7) //long min
+		var South = ws3d.common.CesiumMath.toDegrees(viewRect.south).toFixed(7) //lan min
+		var East = ws3d.common.CesiumMath.toDegrees(viewRect.east).toFixed(7) //long max
+		var North = ws3d.common.CesiumMath.toDegrees(viewRect.north).toFixed(7) //lan max
+		
+		var _html = "";
+		var cctvUrl = `https://openapi.its.go.kr:9443/cctvInfo?type=all&cctvType=1&minX=${West}&maxX=${East}&minY=${South}&maxY=${North}&getType=json&apiKey=9d843f1f50324febab89fff4ce89c598`;
+		//	
+		$.ajax({
+			type : "get",
+			url : cctvUrl,		
+			dataType : 'json',
+			async : false,
+			crossDomain: true,
+			beforeSend:  function(){
+				$("#wsLoadingIndicator").show();
+				map.clear()
+			},
+			success : function(data) {
+				
+				if(data.response.datacount==0){
+					return;
+				}
+				resultAjax = true;
+					
+				console.log(data);
+				cctvformat = data.response.data[0].cctvformat;
+				cctvname = data.response.data[0].cctvname; 
+				cctvurl = data.response.data[0].cctvurl;
+				coordx = data.response.data[0].coordx;
+				coordy = data.response.data[0].coordy;
+				chtml = 
+				`<div class="map_layer" id="POP_CCTV_12045CTE11002_4287" style="left: 786px; top: 291px; z-index: 12;">
+					<button type="button" class="close" onclick="getCctv(${cctvurl});">click</button>
+					<div class="title_box"><span class="tit" onclick="getCctv(${cctvurl});" >CCTV</span><strong class="title">${cctvname}</strong></div>
+					<div class="contents_box" style="padding: 10px 5px 5px;border: 1px solid whitesmoke;">
+						<div class="tit_box">
+						<video id="video_12045CTE11002" width="286" height="260" controls="" style="object-fit: fill;">
+						</video>
+						</div>
+					</div>
+					<div class="put_box"><p>-</p></div>
+				</div>`
+					
+				pointGroup = new vw.geom.ShapeGroups("testgroups");
+				// 1. 이미지 일괄지정.
+				pointGroup.setImage("https://map.vworld.kr/images/v2map/spotmarker.png"); 
+				data.response.data.forEach(function(i,c){
+
+
+					cctvformat = i.cctvformat;
+					cctvname = i.cctvname; 
+					cctvurl = i.cctvurl;
+					coordx = i.coordx;
+					coordy = i.coordy;
+
+					eval(`var pt${c} = new vw.geom.Point(new vw.Coord(${coordx},${coordy}))`);
+					eval(`pt${c}.setId("${cctvurl}")`);
+					eval(`pt${c}.setName("${cctvname}")`);
+					eval(`pt${c}.setFont("고딕")`);
+					eval(`pt${c}.setFontSize(10)`);
+					eval(`pt${c}.create()`);
+					eval(`pointGroup.add(pt${c})`);
+					
+					
+				})
+				
+
+
+				$('#vidName').text(cctvname);
+
+				var visbled = $('#anly_vid').is(":visible");
+				if(!visbled){
+					$('#anly_vid').show();
+					getCctv(cctvurl);
+				}
+				
+				//	  var imgpath = location.protocol + '//' + location.hostname + ':' + location.port + '/assets/images/map/marker.png';
+				// mapInit.map3d.createMarker(cctvname, coordx, coordy, chtml, imgpath, "300", "600");
+			},
+			complete: function(){
+				$("#wsLoadingIndicator").hide()
+				if(resultAjax){
+					var eventHandler = function(windowPosition, ecefPosition, cartographic, featureInfo) {	
+						//console.log("property :" , windowPosition, ecefPosition, cartographic, featureInfo);
+						if ( featureInfo != null ) {
+							// featureInfo 와 Point객체와는 다름. 
+							// Point 객체를 가져올 경우 featureInfo.groupId로 가져옴.(그룹별 아이디라기 보다는 개별아이디.)
+							var id = featureInfo.groupId; //작명이..
+							
+							getCctv(id);
+							
+							$('#vidName').text(map.getObjectById(id).getName());
+						}			
+					}
+					pointGroup.addEventListener(eventHandler);
+					pointGroup.show();
+				}
+				resultAjax = false;
+			},error : function(xhr, stat, err) {
+				$("#wsLoadingIndicator").hide()
+						
+				console.log(stat + '; ' + err);
+			
+			}
+		});
+		}
+
+	var hls = null;
+	//url 해당하는 
+	var getCctv = function(url){
+		var video = document.getElementById('video_target');
+		if(Hls.isSupported()) {
+			if(hls==null){
+				
+				hls = new Hls();
+			}else{
+				
+			}
+			hls.loadSource(url); // 동영상경로
+			hls.attachMedia(video);
+			hls.on(Hls.Events.MANIFEST_PARSED,function() {
+				video.play();
+			});
+
+		} else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+
+			video.src = url; // 동영상경로
+
+			video.addEventListener('canplay',function() {
+
+				video.play();
+
+			});
+
+		}
+	}
+
+</script>
+</body>
+</html>

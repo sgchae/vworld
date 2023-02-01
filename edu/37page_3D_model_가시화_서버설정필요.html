@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<!-- 3D 브이월드 안성지역 테스트 -->
+<html>
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title>3D 브이월드 안성지역 테스트</title>
+        <script
+            type="text/javascript"
+            src="https://map.vworld.kr/js/webglMapInit.js.do?version=2.0&apiKey=CEB52025-E065-364C-9DBA-44880E3B02B8"></script>
+        <script
+            type="text/javascript"
+            src="https://cesium.com/downloads/cesiumjs/releases/1.87/Build/Cesium/Cesium.js"></script>
+    </head>
+
+    <body>
+
+        <div id="vmap" style="width:99%;height:800px;left:0px;top:0px"></div>
+        <input type="button" onclick="createGlb()" value="3D오브젝트 생성">&nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="button" onclick="removeObject()" value="객체 삭제">
+        <br/>
+        <p>경도<input type="text" id="geo_lon" value="127.2503540863114">
+            위도<input type="text" id="geo_lan" value="37.00376494015731">
+            높이<input type="text" id="geo_height" value="76.5">
+        </p>
+        W A S D <input type="text" id="geo_step" value="0.00001" step="0.00001"> Y H <input type="text" id="h_step" value="0.5" step="0.1"> <br/> 
+        <input type="button" onclick="measureHeight()" value="높이">
+        <input type="button" onclick="measureLine()" value="거리">
+        <input type="button" onclick="measureArea()" value="면적">
+        <input type="button" onclick="stop()" value="종료">
+        <input type="button" onclick="erase()" value="지우기">
+        <br/>
+        위 회전↓ :  <input type="text" size="5" id="heading" value="88" style="width: 100px;">&nbsp;&nbsp;&nbsp;&nbsp; 좌우회전↓ :
+        <input type="text" size="5" id="pitch" value="90" style="width: 100px;">&nbsp;&nbsp;&nbsp;&nbsp;
+
+        <script type="text/javascript">
+
+            var mapOptions = new vw.MapOptions(
+                vw.BasemapType.GRAPHIC,
+                "",
+                vw.DensityType.FULL,
+                vw.DensityType.BASIC,
+                false,
+                new vw.CameraPosition(new vw.CoordZ(127.25035408631141, 37.00380494015732, 1340), new vw.Direction(0, -90, 0)),
+                new vw.CameraPosition(new vw.CoordZ(127.25035408631141, 37.00380494015732, 2400), new vw.Direction(0, -90, 0))
+            );
+
+            var map = new vw.Map("vmap", mapOptions);
+
+            // scene, camera, controller 객체 필요.
+            var scene = ws3d.viewer.scene;
+            var camera = ws3d.viewer.camera;
+            var controller = ws3d.viewer.scene.screenSpaceCameraController;
+            var hpRoll;
+            var hpRange;
+            var plane = null; // 오브젝트 객체.
+            var pos;
+            console.log("ws3d:", ws3d);
+
+            var deltaRadians = ws3d
+                .common
+                .CesiumMath
+                .toRadians(1.0);
+
+            // GLTF 객체 생성.
+            function createGlb() {
+                if (plane != null) {
+                    removeObject()
+                }
+
+                let long = $('#geo_lon').val() * 1;
+                let lan = $('#geo_lan').val() * 1;
+                let height = $('#geo_height').val()*1;
+				let geo_step = $('#geo_step').val()*1;
+				let h_step = $('#h_step').val()*1;
+
+				var heading =$('#heading').val()*1;
+                var pitch =$('#pitch').val()*1;
+                var url = "./안성_simplified_3d_mesh.gltf";
+                // var url = "./CesiumDrone.glb"; var url =
+                // "http://sandcastle.cesium.com/SampleData/models/CesiumDrone/CesiumDrone.glb";
+                // 줌 변수
+                var r = 0;
+                // 객체의 중심 좌표
+                var center = new ws3d
+                    .common
+                    .Cartesian3();
+
+                // 객체의 heading, pitch, roll hpRoll = new ws3d.common.HeadingPitchRoll();
+                hpRange = new ws3d
+                    .common
+                    .HeadingPitchRange();
+                // heading, pitch, roll 움직임변수 hpRoll.heading = 0; hpRoll.pitch = 40; hpRoll.roll
+                // = 0;
+                var roll = 0;
+
+                pitch = pitch * ws3d.common.CesiumMath.TWO_PI / 360
+                heading = heading * ws3d.common.CesiumMath.TWO_PI / 360
+                /*
+		180 degree = π radian
+		1 degree = π / 180 radian
+		x degree = x * π / 180 radian
+		π radian = 180 degree
+		1 radian = 180 / π degree
+		x radian = x * 180 / π degree
+		*/
+                var hpRoll = new Cesium.HeadingPitchRoll(heading, pitch, roll);
+
+                // 객체 좌표
+                pos = ws3d
+                    .common
+                    .Cartesian3
+                    .fromDegrees(long, lan, height);
+                // Cesium.Transforms.eastNorthUpToFixedFrame 기능이 핵심.
+                var converter = Cesium.Transforms.eastNorthUpToFixedFrame;
+
+                plane = scene
+                    .primitives
+                    .add(Cesium.Model.fromGltf({
+                        id: "ssss",
+                        url: url,
+                        modelMatrix: Cesium
+                            .Transforms
+                            .headingPitchRollToFixedFrame(pos, hpRoll),
+                        minimumPixelSize: 1,
+                        maximumScale: 1
+                    }));
+
+                // 네비게이션 이벤트 제거.
+                document.removeEventListener("keyup", vw.NavigationZoom.keyUpHandler);
+                document.removeEventListener("keydown", vw.NavigationZoom.keyDownHandler);
+                document.addEventListener("keydown", function (e) {
+                    switch (e.keyCode) {
+                        case 87:
+                            // W y(위도) 값 조절
+                            lan += geo_step;
+                            break;
+                        case 83:
+                            //S  y(위도) 값 조절
+                            lan -= geo_step;
+                            break;
+
+                        case 65:
+                            // A x(경도) 값 조절
+                            long -= geo_step;
+                            break;
+                        case 68:
+                            //D  x(경도) 값 조절
+                            long += geo_step;
+                            break;
+
+							case 89:
+                            //y  높이 값 조절
+                            height += h_step;
+                            break;
+
+
+							case 72:
+                            //h  높이 값 조절
+                            height -= h_step;
+                            break;
+
+
+						//방향키 제어 위치 조절
+                        case 40:
+                            // pitch down
+                            hpRoll.pitch -= deltaRadians;
+                            if (hpRoll.pitch < -ws3d.common.CesiumMath.TWO_PI) {
+                                hpRoll.pitch += ws3d.common.CesiumMath.TWO_PI;
+                            }
+                            break;
+                        case 38:
+                            // pitch up
+                            hpRoll.pitch += deltaRadians;
+                            if (hpRoll.pitch > ws3d.common.CesiumMath.TWO_PI) {
+                                hpRoll.pitch -= ws3d.common.CesiumMath.TWO_PI;
+                            }
+                            break;
+                        case 39:
+							hpRoll.heading += deltaRadians;
+							if (hpRoll.heading > ws3d.common.CesiumMath.TWO_PI) {
+								hpRoll.heading -= ws3d.common.CesiumMath.TWO_PI;
+							}
+                            break;
+                        case 37:
+							hpRoll.heading -= deltaRadians;
+							if (hpRoll.heading < 0.0) {
+								hpRoll.heading += ws3d.common.CesiumMath.TWO_PI;
+							}
+                            break;
+                        default:
+						
+                    }
+
+                    pos = ws3d
+                        .common
+                        .Cartesian3
+                        .fromDegrees(long, lan, height);
+
+                });
+
+                scene
+                    .preUpdate
+                    .addEventListener(function (scene, time) {
+                        Cesium
+                            .Transforms
+                            .headingPitchRollToFixedFrame(
+                                pos,
+                                hpRoll,
+                                Cesium.Ellipsoid.WGS84,
+                                converter,
+                                plane.modelMatrix
+                            );
+                    });
+
+
+                scene
+                    .preRender
+                    .addEventListener(function (scene, time) {
+                        $("#geo_lon").val(long);
+                        $("#geo_lan").val(lan);
+                        $("#geo_height").val(height);
+						$("#heading").val(ws3d.common.CesiumMath.toDegrees(hpRoll.heading).toFixed(1));
+						$("#pitch").val(ws3d.common.CesiumMath.toDegrees(hpRoll.pitch).toFixed(1));
+						$("#roll").val(ws3d.common.CesiumMath.toDegrees(hpRoll.roll).toFixed(1));
+                    });
+
+            }
+
+            // 오브젝트 객체 삭제.
+            function removeObject() {
+                scene
+                    .primitives
+                    .remove(plane);
+            }
+
+            // 높이 측정
+            function measureHeight() {
+                if (map != null) {
+                    // static 메서드만 있음. start(), stop().
+                    vw
+                        .MeasureHeight
+                        .start();
+
+                    // 우클릭시 종료 이벤트 설정
+                    var evtMeasureRightHandler = function (event) {
+                        vw
+                            .MeasureHeight
+                            .stop();
+                    }
+                    vw
+                        .EventProcess
+                        .add(
+                            vw.MapController.RIGHTUPDNCLICK,
+                            map.onMouseRightDown,
+                            evtMeasureRightHandler
+                        );
+                }
+            }
+
+            // 거리 측정
+            function measureLine() {
+                if (map != null) {
+                    // static 메서드만 있음. start(), stop().
+                    vw
+                        .MeasureLine
+                        .start();
+
+                    // 우클릭시 종료 이벤트 설정
+                    var evtMeasureRightHandler = function (event) {
+                        vw
+                            .MeasureLine
+                            .stop();
+                    }
+
+                    vw
+                        .EventProcess
+                        .add(
+                            vw.MapController.RIGHTUPDNCLICK,
+                            map.onMouseRightDown,
+                            evtMeasureRightHandler
+                        );
+                }
+            }
+
+            // 면적 측정
+            function measureArea() {
+                if (map != null) {
+                    // static 메서드만 있음. start(), stop().
+                    vw
+                        .MeasureArea
+                        .start();
+
+                    // 우클릭시 종료 이벤트 설정
+                    var evtMeasureRightHandler = function (event) {
+                        vw
+                            .MeasureArea
+                            .stop();
+                    }
+
+                    vw
+                        .EventProcess
+                        .add(
+                            vw.MapController.RIGHTUPDNCLICK,
+                            map.onMouseRightDown,
+                            evtMeasureRightHandler
+                        );
+                }
+            }
+
+            // 측정 지우기.
+            function erase() {
+                console.log("erase()~~");
+                map.clear();
+            }
+
+            // 버튼 이벤트로 종료.
+            function stop() {
+                console.log("stop()~~");
+                vw
+                    .MeasureHeight
+                    .stop();
+                vw
+                    .MeasureLine
+                    .stop();
+                vw
+                    .MeasureArea
+                    .stop();
+                map.clear();
+            }
+        </script>
+    </body>
+</html>
