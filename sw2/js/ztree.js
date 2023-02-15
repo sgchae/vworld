@@ -58,7 +58,7 @@ var setting = {
 var DICTIONARY,GroupLIST,LIST;
   $.ajax({
 		type : "get",
-		url : '/json/layerTree3D.json' ,
+		url : 'json/layerTree3D.json' ,
 		
 		dataType : 'json',
 		async : false,
