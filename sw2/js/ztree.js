@@ -266,10 +266,87 @@ var triggerChk = function(value){
   $(`#${value}_check`).trigger('click')
 }
 
-// 지도 변경 시 배경지도 변경 구현 필요
+
+// 지도 변경 시 배경지도 변경 구현 임시
 $(document).on('change','#baseMapLayer',function(){
   let this_val = $(this).val();
   console.log(this_val)
+  
+  img_format = 'jpeg';
 
+  //기존거 제거 
+  let removeLayer = null;
+  viewModel.layers.forEach(function(flayer,i){
+    if(flayer.name=='baseTile'){
+      removeLayer = flayer;
+      console.log(i+" 번째 삭제 필요")
+      imageryLayers.remove(viewModel.layers[i])
+    }
+  })
+  updateLayerList();
+
+  // Satellite , Hybrid
+  if(this_val == 'Satellite'){
+    addAdditionalLayerOption(
+      'baseTile',
+      new Cesium.WebMapTileServiceImageryProvider({
+        url : `https://api.vworld.kr/req/wmts/1.0.0/CEB52025-E065-364C-9DBA-44880E3B02B8/${this_val}/{TileMatrix}/{TileRow}/{TileCol}.${img_format}`,
+        layer : this_val,
+        style : 'default',
+        format : `img/${img_format}`,
+      tileMatrixSetID : '',
+        maximumLevel: 19
+    }),
+      1.0,
+      true
+    );  
+  }else if(this_val == 'Hybrid'){ //2개의 레이어를 올림
+    addAdditionalLayerOption(
+      'baseTile',
+      new Cesium.WebMapTileServiceImageryProvider({
+        url : `https://api.vworld.kr/req/wmts/1.0.0/CEB52025-E065-364C-9DBA-44880E3B02B8/Satellite/{TileMatrix}/{TileRow}/{TileCol}.${img_format}`,
+        layer : `Satellite`,
+        style : 'default',
+        format : `img/${img_format}`,
+      tileMatrixSetID : '',
+        maximumLevel: 19
+    }),
+      1.0,
+      true
+    );  
+
+    img_format = "png";
+    addAdditionalLayerOption(
+      'baseTile',
+      new Cesium.WebMapTileServiceImageryProvider({
+        url : `https://api.vworld.kr/req/wmts/1.0.0/CEB52025-E065-364C-9DBA-44880E3B02B8/${this_val}/{TileMatrix}/{TileRow}/{TileCol}.${img_format}`,
+        layer : this_val,
+        style : 'default',
+        format : `img/${img_format}`,
+      tileMatrixSetID : '',
+        maximumLevel: 19
+    }),
+      1.0,
+      true
+    );  
+
+  }else{
+    img_format = "png";
+    addAdditionalLayerOption(
+      'baseTile',
+      new Cesium.WebMapTileServiceImageryProvider({
+        url : `https://api.vworld.kr/req/wmts/1.0.0/CEB52025-E065-364C-9DBA-44880E3B02B8/${this_val}/{TileMatrix}/{TileRow}/{TileCol}.${img_format}`,
+        layer : this_val,
+        style : 'default',
+        format : `img/${img_format}`,
+      tileMatrixSetID : '',
+        maximumLevel: 19
+    }),
+      1.0,
+      true
+    );  
+  }
+
+  updateLayerList()
   
 })
