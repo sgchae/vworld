@@ -319,6 +319,21 @@ var flyCesium = function(x,y,z,h,p){
  
 moveCesium(126.9142,37.53185,788, 351.73879531709434,-88.59244966360814)
 
+//최초 지도 호출
+addAdditionalLayerOption(
+  'baseTile',
+  new Cesium.WebMapTileServiceImageryProvider({
+    url : 'https://api.vworld.kr/req/wmts/1.0.0/CEB52025-E065-364C-9DBA-44880E3B02B8/Satellite/{TileMatrix}/{TileRow}/{TileCol}.jpeg',
+    layer : 'Satellite',
+    style : 'default',
+    format : 'image/jpeg',
+   tileMatrixSetID : '',
+    maximumLevel: 19
+ }),
+  1.0,
+  true
+);
+updateLayerList()
 
 </script>
 </body>
