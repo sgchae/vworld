@@ -145,6 +145,9 @@ $(function(){
                     f.set('color',`rgba(${r}, ${g}, ${b}, .7)`)
                     let cnt = `${r}${g}${b}`;
                     f.set('cnt',cnt)
+		    let mx = (f.getGeometry().getExtent()[0]+f.getGeometry().getExtent()[2])/2;
+                    let my = (f.getGeometry().getExtent()[1]+f.getGeometry().getExtent()[3])/2;
+                    let cmxy =  ol.proj.transform([mx,my], "EPSG:900913",'EPSG:4326');
                     html +=`<option value="${행정구역코드}">${행정구역명}(${행정구역코드})</option>`
                     resultHtml+= `<li><a href='#' onclick='move(${mx},${my},500)'>${행정구역명}(코드:${행정구역코드})(통계값:${cnt})</a></li>`;
                 })
