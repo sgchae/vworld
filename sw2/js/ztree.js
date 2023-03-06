@@ -139,6 +139,7 @@ function myOnCheck(event, treeId, treeNode) {
     let rangeHtml = "";
 
     if(treeNode.checked){ //체크 true
+      $('#range-noti').show()
       addAdditionalLayerOption(
         LAENAM,
         new Cesium.WebMapServiceImageryProvider({
@@ -157,11 +158,13 @@ function myOnCheck(event, treeId, treeNode) {
         true
       );
       updateLayerList()
-      rangeHtml = `<li id="li_${LAENAM}" style="height: 18px;"><span style="font-size: 0.7em;">${tname}</span>
+      rangeHtml = `<li id="li_${LAENAM.replace(",LP_PA_CBND_BONBUN","")}" style="height: 18px;"><span style="font-size: 0.7em;">${tname}</span>
       <input id="range_${LAENAM}" type="range" min="0" max="1" step="0.01" value="1" style="height: 9px;">
       <span id="close_${LAENAM}" class="center_close" onclick="triggerChk('${tid}')"></span></li>`;
       
     }else{
+
+
         let removeLayer = null;
         viewModel.layers.forEach(function(flayer,i){
           if(flayer.name==LAENAM){
@@ -171,29 +174,27 @@ function myOnCheck(event, treeId, treeNode) {
             imageryLayers.remove(viewModel.layers[i])
           }
         })
+        
+
+        if(LAENAM.indexOf('LP_PA_CBND_BUBUN,LP_PA_CBND_BONBUN')>-1){
+          LAENAM = "LP_PA_CBND_BUBUN"; //부번만 조회
+        }
         $(`#li_${LAENAM}`).remove()
         updateLayerList();
+        if($('#range-ul li').length==0){
+          $('#range-noti').hide()
+
+          //결과 WFS 폴리곤 제거 임시 for 문 돌려서 다 지워야 되는데 허허 
+          viewer.dataSources.remove(viewer.dataSources.getByName("resultgeojson")[0])
+
+        }
+        
     }
     $('#range-ul').prepend(rangeHtml);
 };
 
 }) //ztree 기본 종료
 
-// 셀렉트 레이어 설정
-function addBaseLayerOption(name, imageryProvider) {
-  let layer;
-  if (typeof imageryProvider === "undefined") {
-    layer = imageryLayers.get(0);
-    viewModel.selectedLayer = layer;
-  } else {
-    layer = new Cesium.ImageryLayer(imageryProvider);
-  }
-
-  layer.name = name;
-  baseLayers.push(layer);
-}
-
-// 레이어 추가 설정, 
 
 function addAdditionalLayerOption(name, imageryProvider, alpha, show) {
   const layer = imageryLayers.addImageryProvider(imageryProvider);
@@ -266,8 +267,7 @@ var triggerChk = function(value){
   $(`#${value}_check`).trigger('click')
 }
 
-
-// 지도 변경 시 배경지도 변경 구현 임시
+// 지도 변경 시 배경지도 변경 구현 필요
 $(document).on('change','#baseMapLayer',function(){
   let this_val = $(this).val();
   console.log(this_val)
@@ -350,3 +350,10 @@ $(document).on('change','#baseMapLayer',function(){
   updateLayerList()
   
 })
+
+
+
+
+    
+
+

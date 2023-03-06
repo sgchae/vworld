@@ -30,7 +30,13 @@ $(function(){
         error: function(xhr, stat, err) {}
     });
     
-    //광역시도 검색
+    // 광역시도 검색 해당하는 시군구 
+
+    // 호출 URL 인코딩 전 
+    // https://map.vworld.kr/proxy.do?url=http://api.vworld.kr/req/wfs?key=CEB52025-E065-364C-9DBA-44880E3B02B8&domain=http://localhost:8080&SERVICE=WFS&version=1.1.0&request=GetFeature&TYPENAME=lt_c_adsigg&OUTPUT=application/json&SRSNAME=EPSG:4326
+    // 인코딩 후
+    // https://map.vworld.kr/proxy.do?url=http%3A%2F%2Fapi.vworld.kr%2Freq%2Fwfs%3Fkey%3DCEB52025-E065-364C-9DBA-44880E3B02B8%26domain%3Dhttp%3A%2F%2Flocalhost%3A8080%26SERVICE%3DWFS%26version%3D1.1.0%26request%3DGetFeature%26TYPENAME%3Dlt_c_adsigg%26OUTPUT%3Dapplication%2Fjson%26SRSNAME%3DEPSG%3A4326
+
     $(document).on("change","#sido_code",function(){
         let thisVal = $(this).val();		
 
@@ -45,12 +51,34 @@ $(function(){
             async: false,
             dataType: 'jsonp',
             success: function(data) {
-                let vectorSource = new ol.source.Vector({features: (new ol.format.GeoJSON()).readFeatures(data.response.result.featureCollection)})
-                
-                // ol.format.GeoJSON()).readFeatures Openlayers에서 제공하는 파서
+                var dataSource = new Cesium.GeoJsonDataSource('sido_code');
+   
+                    dataSource.load(
+                    data.response.result.featureCollection,
+                            { fill: Cesium.Color.PINK,
+                                clampToGround : true 
+                            }
 
-                let html = "<option>선택</option>";
-                var resultHtml = "";
+                ).then(value=>{
+
+
+                    scene.primitives.add(dataSource)
+                    
+                    //console.log(dataSource);
+                    //viewer.dataSources.add(dataSource);
+                })
+
+     
+                
+                /* 안댐
+                viewer.dataSources.add(
+                    Cesium.GeoJsonDataSource.load(
+                        data,
+                        { fill: Cesium.Color.PINK }
+                    )
+                )*/
+              
+                /*
                 vectorSource.getFeatures().forEach(function(f){
                     //console.log(f.properties)
                     let 행정구역코드 = f.get("sig_cd")
@@ -95,7 +123,7 @@ $(function(){
 
                     
                 })
-                $('#code_result').html(resultHtml);
+                $('#code_result').html(resultHtml);*/
             },
             error: function(xhr, stat, err) {}
         });

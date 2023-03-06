@@ -26,7 +26,7 @@ input::placeholder {}
 a {text-decoration:none;color:#222;}
 
 select {height:34px;padding:0 40px 0 20px;border:1px solid #d5d5d5;/*border-radius:6px;*/
-background: rgb(232, 240, 254) url(images/bg_select.png) no-repeat right center;
+background: rgb(232, 240, 254) url(../images/bg_select.png) no-repeat right center;
 font-size:14px;-webkit-appearance: none;-moz-appearance: none;appearance: none;}
 select::-ms-expand {display: none;}
 input[type="text"], input[type="password"] {width: 100%; vertical-align:top;height:28px;border:1px solid #d5d5d5;
@@ -39,9 +39,9 @@ input[type="text"]:focus, input[type="password"]:focus {border:1px solid #d0d0d0
 /*위는 특정 팝업의 헤더 없애기 위한 것. 이런 식으로 사용 $(".pop21").parent().addClass("noheader");*/
 .select {width:100%; position:relative;display:inline-block;vertical-align:middle;color:#fff;font-size:14px;}
 .select dt a {width:100%;  display:block;height:28px;padding:0 40px 0 11px;border:1px solid #d5d5d5;
-background: #fff url(images/bg_select.png) no-repeat right center;color:#6a707e;
+background: #fff url(../images/bg_select.png) no-repeat right center;color:#6a707e;
 font-size:14px;line-height:26px;}
-.select dt a.on {background: #fff url(images/bg_select_u.png) no-repeat right center;}
+.select dt a.on {background: #fff url(../images/bg_select_u.png) no-repeat right center;}
 .select dd {display:none;position:absolute;top:30px;left:0;width:100%;
 padding:0 !important;border:1px solid #d5d5d5; max-height: 380px; overflow-y: auto;
 background:#fff;color:#6a707e;font-size:14px; z-index:1000;}
@@ -84,37 +84,37 @@ width:100%;height:100%;text-align:center; font-size:13px; line-height: 17px; pad
 font-weight: 500;}
 
 
-#lnb > ul > li > a.lnb001{background:#ffffff url(images/lnb001.png) no-repeat center 12px; color:#4997f6; }
-#lnb > ul > li > a.lnb002{background:#ffffff url(images/lnb002.png) no-repeat center 12px; color:#4997f6; }
-#lnb > ul > li > a.lnb003{background:#ffffff url(images/lnb003.png) no-repeat center 12px; color:#4997f6; }
-#lnb > ul > li > a.lnb004{background:#ffffff url(images/lnb004.png) no-repeat center 12px; color:#4997f6; }
-#lnb > ul > li > a.lnb005{background:#ffffff url(images/lnb005.png) no-repeat center 12px; color:#4997f6; }
-#lnb > ul > li > a.lnb006{background:#ffffff url(images/lnb001.png) no-repeat center 12px; color:#4997f6; }
+#lnb > ul > li > a.lnb001{background:#ffffff url(../images/lnb001.png) no-repeat center 12px; color:#4997f6; }
+#lnb > ul > li > a.lnb002{background:#ffffff url(../images/lnb002.png) no-repeat center 12px; color:#4997f6; }
+#lnb > ul > li > a.lnb003{background:#ffffff url(../images/lnb003.png) no-repeat center 12px; color:#4997f6; }
+#lnb > ul > li > a.lnb004{background:#ffffff url(../images/lnb004.png) no-repeat center 12px; color:#4997f6; }
+#lnb > ul > li > a.lnb005{background:#ffffff url(../images/lnb005.png) no-repeat center 12px; color:#4997f6; }
+#lnb > ul > li > a.lnb006{background:#ffffff url(../images/lnb001.png) no-repeat center 12px; color:#4997f6; }
 
 #lnb > ul > li > a.lnb001:hover, #lnb > ul > li > a.lnb001:focus
-{background:#5fa5fa url(images/lnb001h.png) no-repeat center 12px; color:#fff;}
+{background:#5fa5fa url(../images/lnb001h.png) no-repeat center 12px; color:#fff;}
 #lnb > ul > li > a.lnb002:hover, #lnb > ul > li > a.lnb002:focus
-{background:#5fa5fa url(images/lnb002h.png) no-repeat center 12px; color:#fff;}
+{background:#5fa5fa url(../images/lnb002h.png) no-repeat center 12px; color:#fff;}
 #lnb > ul > li > a.lnb003:hover, #lnb > ul > li > a.lnb003:focus
-{background:#5fa5fa url(images/lnb003h.png) no-repeat center 12px; color:#fff;}
+{background:#5fa5fa url(../images/lnb003h.png) no-repeat center 12px; color:#fff;}
 #lnb > ul > li > a.lnb004:hover, #lnb > ul > li > a.lnb004:focus
-{background:#5fa5fa url(images/lnb004h.png) no-repeat center 12px; color:#fff;}
+{background:#5fa5fa url(../images/lnb004h.png) no-repeat center 12px; color:#fff;}
 #lnb > ul > li > a.lnb005:hover, #lnb > ul > li > a.lnb005:focus
-{background:#5fa5fa url(images/lnb005h.png) no-repeat center 12px; color:#fff;}
+{background:#5fa5fa url(../images/lnb005h.png) no-repeat center 12px; color:#fff;}
 #lnb > ul > li > a.lnb006:hover, #lnb > ul > li > a.lnb006:focus
-{background:#5fa5fa url(images/lnb001h.png) no-repeat center 12px; color:#fff;}
+{background:#5fa5fa url(../images/lnb001h.png) no-repeat center 12px; color:#fff;}
 #lnb > ul > li.active > a.lnb001
-{background:#4997f6 url(images/lnb001h.png) no-repeat center 12px; color:#fff;}
+{background:#4997f6 url(../images/lnb001h.png) no-repeat center 12px; color:#fff;}
 #lnb > ul > li.active > a.lnb002
-{background:#4997f6 url(images/lnb002h.png) no-repeat center 12px; color:#fff;}
+{background:#4997f6 url(../images/lnb002h.png) no-repeat center 12px; color:#fff;}
 #lnb > ul > li.active > a.lnb003
-{background:#4997f6 url(images/lnb003h.png) no-repeat center 12px; color:#fff;}
+{background:#4997f6 url(../images/lnb003h.png) no-repeat center 12px; color:#fff;}
 #lnb > ul > li.active > a.lnb004
-{background:#4997f6 url(images/lnb004h.png) no-repeat center 12px; color:#fff;}
+{background:#4997f6 url(../images/lnb004h.png) no-repeat center 12px; color:#fff;}
 #lnb > ul > li.active > a.lnb005
-{background:#4997f6 url(images/lnb005h.png) no-repeat center 12px; color:#fff;}
+{background:#4997f6 url(../images/lnb005h.png) no-repeat center 12px; color:#fff;}
 #lnb > ul > li.active > a.lnb006
-{background:#4997f6 url(images/lnb001h.png) no-repeat center 12px; color:#fff;}
+{background:#4997f6 url(../images/lnb001h.png) no-repeat center 12px; color:#fff;}
 
 
 
@@ -136,7 +136,7 @@ font-family:"나눔스퀘어",'NanumSquare', sans-serif; font-weight: 700; heigh
 .sbmenu .scrollDv > div {max-height:620px; text-align: center;}
 .sbmenu .normalDV {padding:0px; text-align: center;}
 /*.sbmenu .close {position:absolute;top:25px;right:30px;width:14px;height:14px;
-    background:url(images/lnb_panel_close.png) no-repeat center;font-size:0;}*/
+    background:url(../images/lnb_panel_close.png) no-repeat center;font-size:0;}*/
 .sbmenu .bot_btn {padding:25px 12px 0 12px;}
 .sbmenu .chkall {margin-bottom:7px;text-align:right;}
 .sbmenu .dvs {padding-right:30px;}
@@ -185,7 +185,7 @@ font-family:"나눔스퀘어",'NanumSquare', sans-serif; font-weight: 700; heigh
     background-color: transparent;
     background-repeat: no-repeat;
     background-attachment: scroll;
-    background-image: url(../images/ztree/metro.png);}
+    background-image: url(../../images/ztree/metro.png);}
 /*lnbmenu2*/
 .search_wrap{border:1px solid #d5d5d5; margin-top:30px;}
 .search_wrap:after{content: ""; display: block; clear: both;}
@@ -222,16 +222,16 @@ margin-top:30px;}
 background: #fff; border:1px solid #4997f6; z-index: 99}
 .main-r-menu{display: block; width:100%; height:51px; border-top:1px solid #e2e2e2;}
 .main-r-menu:first-child{border-top:none; height:50px;}
-.main-r-menu.mr001{background: url(/assets/images/ico_mr1.png) center no-repeat;}
-.main-r-menu.mr002{background: url(/assets/images/ico_mr2.png) center no-repeat;}
-.main-r-menu.mr003{background: url(/assets/images/ico_mr3.png) center no-repeat;}
-.main-r-menu.mr004{background: url(/assets/images/ico_mr4.png) center no-repeat;}
-.main-r-menu.mr003.active{background: #4997f6 url(/assets/images/ico_mr3h.png) center no-repeat;}
-.main-r-menu.mr004.active{background: #4997f6 url(/assets/images/ico_mr4h.png) center no-repeat;}
-.main-r-menu.mr005{background: url(/assets/images/ico_mr5.png) center no-repeat;}
-.main-r-menu.mr006{background: url(/assets/images/ico_mr6.png) center no-repeat;}
-.main-r-menu.mr007{background: url(/assets/images/ico_mr7.png) center no-repeat;}
-.main-r-menu.mr007.active{background: #4997f6 url(/assets/images/ico_mr7h.png) center no-repeat;}
+.main-r-menu.mr001{background: url(/assets/../images/ico_mr1.png) center no-repeat;}
+.main-r-menu.mr002{background: url(/assets/../images/ico_mr2.png) center no-repeat;}
+.main-r-menu.mr003{background: url(/assets/../images/ico_mr3.png) center no-repeat;}
+.main-r-menu.mr004{background: url(/assets/../images/ico_mr4.png) center no-repeat;}
+.main-r-menu.mr003.active{background: #4997f6 url(/assets/../images/ico_mr3h.png) center no-repeat;}
+.main-r-menu.mr004.active{background: #4997f6 url(/assets/../images/ico_mr4h.png) center no-repeat;}
+.main-r-menu.mr005{background: url(/assets/../images/ico_mr5.png) center no-repeat;}
+.main-r-menu.mr006{background: url(/assets/../images/ico_mr6.png) center no-repeat;}
+.main-r-menu.mr007{background: url(/assets/../images/ico_mr7.png) center no-repeat;}
+.main-r-menu.mr007.active{background: #4997f6 url(/assets/../images/ico_mr7h.png) center no-repeat;}
 
 .main-ra-menus{display: none}
 .main-rr-menus a{  text-align: center;  font-size: 13px;     color: #4997f6;     padding-top: 9px;}
@@ -243,11 +243,11 @@ background: #fff; border:1px solid #4997f6; z-index: 1000}
 float: left;}
 .main-ra-menu:first-child{border-left:none; width:40px;}
 
-.main-ra-menu.mra001{background: url(/assets/images/ico_mr_a1.png) center no-repeat;}
-.main-ra-menu.mra002{background: url(/assets/images/ico_mr_a2.png) center no-repeat;}
-.main-ra-menu.mra003{background: url(/assets/images/ico_mr_a3.png) center no-repeat;}
-.main-ra-menu.mra004{background: url(/assets/images/ico_mr_a5.png) center no-repeat;} 
-.main-ra-menu.mra005{background: url(/assets/images/ico_mr2.png) center no-repeat;} 
+.main-ra-menu.mra001{background: url(/assets/../images/ico_mr_a1.png) center no-repeat;}
+.main-ra-menu.mra002{background: url(/assets/../images/ico_mr_a2.png) center no-repeat;}
+.main-ra-menu.mra003{background: url(/assets/../images/ico_mr_a3.png) center no-repeat;}
+.main-ra-menu.mra004{background: url(/assets/../images/ico_mr_a5.png) center no-repeat;} 
+.main-ra-menu.mra005{background: url(/assets/../images/ico_mr2.png) center no-repeat;} 
 
 .main-rb-menus{display: none}
 .main-rb-menus.active{display: block; position: fixed;  top:507px; right:50px;
@@ -257,9 +257,9 @@ background: #fff; border:1px solid #4997f6; z-index: 1000}
 float: left;}
 .main-rb-menu:first-child{border-left:none; width:40px;}
 
-.main-rb-menu.mrb001{background: url(/assets/images/ico_mr_b1.png) center no-repeat;}
-.main-rb-menu.mrb002{background: url(/assets/images/ico_mr_b2.png) center no-repeat;}
-.main-rb-menu.mrb003{background: url(/assets/images/ico_mr_b3.png) center no-repeat;}
+.main-rb-menu.mrb001{background: url(/assets/../images/ico_mr_b1.png) center no-repeat;}
+.main-rb-menu.mrb002{background: url(/assets/../images/ico_mr_b2.png) center no-repeat;}
+.main-rb-menu.mrb003{background: url(/assets/../images/ico_mr_b3.png) center no-repeat;}
     
 
 

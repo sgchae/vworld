@@ -14,6 +14,9 @@ var search = function(){
                 return;
             }
             let chk = false; 
+            var entities = [];
+            var clusterDataSource = new Cesium.CustomDataSource('myData');
+
             for(var o in data.response.result.items){ 
                 let mx = data.response.result.items[o].point.x*1;
                 let my = data.response.result.items[o].point.y*1;
@@ -25,19 +28,80 @@ var search = function(){
                 var parcel = data.response.result.items[o].address.parcel;
                 var road = data.response.result.items[o].address.road;
                 var markerhtml = "";
-
-                  //  map.createMarker(title  ,mx        ,my     ,markerhtml      ,"http://map.vworld.kr/images/op02/map_point.png"                );
-                var text='';
+                var textx='';
                 if($('[name=type]').val()=='PLACE'){
-                    text=`${title}`
+                    textx=`${title}`
                 }else if($('[name=category]').val()=='road'){
-                    text=`${road}`
+                    textx=`${road}`
                 }else if($('[name=category]').val()=='parcel'){
-                    text=`${parcel}`
+                    textx=`${parcel}`
                 }
-                resultHtml += `<li><a href='#' onclick='move(${mx},${my},500)'>${text}</a></li>`;
+                var entty = new Cesium.Entity({
+                    position: Cesium.Cartesian3.fromDegrees(mx, my),
+                    name: title,
+                    bldnm: bldnm,
+                    parcel : parcel,
+                    road : road, 
+                    billboard: {
+                        image: 'images/marker_blue.png',
+                        width: 32,
+                        height: 32,
+                        heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+                        disableDepthTestDistance: Number.POSITIVE_INFINITY,
+                    },
+                    label: {
+                        text: textx,
+                        font: "20px sans-serif",
+                        heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+                        disableDepthTestDistance: Number.POSITIVE_INFINITY,
+                    },
+                })
+                
+                clusterDataSource.entities.add(entty);
+                  //  map.createMarker(title  ,mx        ,my     ,markerhtml      ,"http://map.vworld.kr/images/op02/map_point.png"                );
+
+                resultHtml += `<li><a href='#' onclick='move(${mx},${my},500)'>${textx}</a></li>`;
                  
             }
+            //데이터 셋팅
+            //var clusterDataSource = new Cesium.ClusterDataSource();
+
+            //스타일구성 
+            viewer.dataSources.add(clusterDataSource);
+
+
+            // var clusterBillboards = new Cesium.BillboardCollection();
+            // var clusterPoint = new Cesium.PointPrimitiveCollection();
+            // clusterPoint.color = Cesium.Color.fromCssColorString('#00ff00');
+
+            //이벤트 등록
+            // viewer.screenSpaceEventHandler.setInputAction(function onMouseClick(movement) {
+            //     var pickedObject = viewer.scene.pick(movement.position);
+            //     if (Cesium.defined(pickedObject) && pickedObject.id && pickedObject.id.cluster) {
+            //       var cluster = pickedObject.id;
+            //       viewer.flyTo(cluster);
+            //       cluster.getEntities().forEach(function(entity) {
+            //         console.log(entity.name);
+            //       });
+            //     }
+            // }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+
+            //클러스터 렌더링
+            // viewer.scene.primitives.add(clusterBillboards);
+            // viewer.scene.primitives.add(clusterPoint);
+            clusterDataSource.clustering.enabled = false;
+            clusterDataSource.clustering.clusterBillboards = true;
+            clusterDataSource.clustering.clusterPoints = true;
+            clusterDataSource.clustering.pixelRange = 20;
+            clusterDataSource.clustering.minimumClusterSize = 2;
+            
+            clusterDataSource.clustering.clusterEvent.addEventListener(function(entities, cluster) {
+                //cluster.label.show = true;
+                //cluster.image
+                //cluster.label.text = entities.length.toLocaleString();
+            });
+            
             $('#search_result').html(resultHtml);
         },
         error: function(xhr, stat, err) {}
