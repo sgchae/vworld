@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<!-- 
+	실증모델
+
+  imageryLayers.get(0) 빙맵 기본값 
+  -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>SW상호운용성 실증모델</title>  
+<script src="https://cesium.com/downloads/cesiumjs/releases/1.95/Build/Cesium/Cesium.js"></script>
+<link href="https://cesium.com/downloads/cesiumjs/releases/1.95/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/ztreeStyle.css">
+<link rel="stylesheet" href="css/jquery.scrollbar.css"/>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.4.4/proj4.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script type='text/javascript' src='js/jquery.ztree.core.js'></script>
+<script type='text/javascript' src='js/jquery.ztree.excheck.js'></script>
+<script type='text/javascript' src='js/jquery.ztree.exedit.js'></script>
+<script type='text/javascript' src='js/jquery.scrollbar.min.js'></script>
+<!-- <script type='text/javascript' src='js/dosidong.js'></script>
+<script type='text/javascript' src='js/cluster.js'></script>
+<script type='text/javascript' src='js/route.js'></script>-->
+<script type='text/javascript' src='js/search.js'></script>
+<!-- <script type='text/javascript' src='js/ztree.js'></script>  -->
+<!--
+https://openlayers.org/en/v6.4.3/build/ol.js
+https://openlayers.org/en/v5.3.0/build/ol.js
+https://openlayers.org/en/v4.6.5/build/ol.js
+https://openlayers.org/en/v3.20.1/build/ol.js
+
+https://openlayers.org/en/v6.4.3/css/ol.css
+https://openlayers.org/en/v5.3.0/css/ol.css
+https://openlayers.org/en/v4.6.5/css/ol.css
+https://openlayers.org/en/v3.20.1/css/ol.css
+-->
+
+<script>
+
+</script>
+<style>
+html{height:100%}body{background:#000;color:#eee;font-family:sans-serif;font-size:9pt;padding:0;margin:0;width:100%;height:100%;overflow:hidden}
+.fullSize{display:block;position:absolute;top:0;left:0;border:none;width:100%;height:100%}
+#loadingOverlay{position:absolute;top:0;left:0;opacity:.9;width:100%;height:100%;display:none}
+#loadingOverlay h1{text-align:center;position:relative;top:50%;margin-top:-.5em}
+#loadingOverlay{display:block}
+#toolbar{
+    top: 23px;
+    left: 308px;
+}
+ #toolbar{margin:5px;padding:2px 5px;position:absolute}.infoPanel{background:rgba(42,42,42,.8);padding:4px;border:1px solid #444;border-radius:4px}
+ #toolbar {
+        background: rgba(42, 42, 42, 0.8);
+        padding: 4px;
+        border-radius: 4px;
+      }
+
+      #toolbar input {
+        vertical-align: middle;
+        padding-top: 2px;
+        padding-bottom: 2px;
+      }
+
+      #toolbar table tr {
+        transform: translateY(0);
+        transition: transform 0.4s ease-out;
+      }
+
+      #toolbar table tr.up {
+        transform: translateY(33px);
+        transition: none;
+      }
+
+      #toolbar table tr.down {
+        transform: translateY(-33px);
+        transition: none;
+      }
+      #toolbar .chk{ width: 30px; height: 20px;}
+</style>
+
+</head>
+
+<body>
+<div id="wrap">
+    <div id="cesiumContainer" style="width: 100%; ; left: 0px; top: 0px"></div>
+    <div class="main-rr-menus">
+        <a href="#" class="main-r-menu mr001"></a>
+        <a href="javascript:clear();" class="main-r-menu mr002">지도<br>초기화</a>
+        <a href="#" class="main-r-menu mr003" style="display: none;"></a>
+        <a href="#" class="main-r-menu mr004" style="display: none;"></a>
+        <a href="#" class="main-r-menu mr005" style="display: none;"></a>
+        <a href="#" class="main-r-menu mr006"style="display: none;"></a>
+        <a href="#" class="main-r-menu mr007 active" style="display: none;"></a>
+        <a id="image-download" download="map.png"></a>
+    </div>
+    <div id="lnb">
+        <ul>
+            <li>
+                <a href="#" class="lnb001" name="layer" title="레이어 목록">레이어<br>목록</a>
+            </li>
+            <li onclick="$('[name=query]').val('');$('[name=type]').val('PLACE');$('[name=category]').val('')" >
+                <a href="#" class="lnb002" name="search" title="주소검색">주소<br>검색</a>
+            </li>
+            <li>
+                <a href="#" class="lnb003" name="fac" title="구역통계">구역<br>통계</a>
+            </li>
+            <li>
+                <a href="#" class="lnb004" name="mng" title="영역조회">영역<br>조회</a>
+            </li>
+            <li>
+                <a href="#" class="lnb005" name="type" title="경로검색">경로<br>검색</a>
+            </li>
+        </ul>
+        <div id="lnbmenu1" class="sbmenu">
+            <div class="title">레이어 목록</div>
+            <div class="bd">
+                <div class="scrollDv">
+                    <div class="scrollbar-inner">
+                        <div class="subtitle" >
+                            <span class="span">배경지도</span>
+                            <select name="baseMapLayer" id="baseMapLayer" title="배경지도종류" class="form-control" >
+                                <option value="Base">기본지도</option>
+                                <option value="gray">회색지도</option>
+                                <option value="midnight">야간지도</option>
+                                <option value="Satellite">영상지도</option>
+                                <option value="Hybrid">영상POI</option>
+                            </select>
+                        </div>
+                        <ul id="tree1" class="ztree" style="margin-top: 13px;"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="lnbmenu2" class="sbmenu">
+            <div class="title">주소검색</div>
+            <div class="bd">
+                <div class="search_wrap">
+                    <label for="lnb2_search">검색어</label>
+                    <form id="searchForm" action="#" class="form_data" onsubmit="return false;search();">
+                        <input type="hidden" name="page" value="1" />
+                        <input type="hidden" name="type" value="PLACE" />
+                        <input type="hidden" name="category" value="" />
+                        <input type="hidden" name="size" value="1000" />
+                        <input type="hidden" name="request" value="search" />
+                        <input type="hidden" name="apiKey" value="CEB52025-E065-364C-9DBA-44880E3B02B8" />
+                        <input type="text" id="searchValue" name="query" placeholder="검색어를 입력하세요">
+                    </form>
+                    <a href="javascript:search();" class="btn btn_prm_new s_btn" >조회</a>
+                </div>
+                <div class="tab_wrap">
+                    <a href="javascript:$('[name=type]').val('PLACE');$('[name=category]').val('');search();" class="tab2 tab2_001 on">명칭</a>
+                    <a href="javascript:$('[name=type]').val('address');$('[name=category]').val('road');search();" class="tab2 tab2_002" >도로명</a>
+                    <a href="javascript:$('[name=type]').val('address');$('[name=category]').val('parcel');search();" class="tab2 tab2_003" >지번</a>
+                </div>
+                <ul class="search_result" id="search_result">
+                    <li>
+                        <a href="#" >검색결과가 없습니다.</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div id="lnbmenu3" class="sbmenu">
+            <div class="title">행정구역</div>
+            <div class="bd2">
+                <select id="sido_code">
+                    <option>선택</option>
+                </select>
+                <select id="sigoon_code">
+                    <option>선택</option>
+                </select>
+                <select id="dong_code">
+                    <option>선택</option>
+                </select>
+                <select id="lee_code">
+                    <option>선택</option>
+                </select>
+            </div>
+            <div class="bd">
+                <ul class="search_result" id="code_result">
+                    
+                </ul>
+            </div>
+        </div>
+
+        <div id="lnbmenu4" class="sbmenu">
+            <div class="title">영역 조회</div>
+            <div class="bd">
+                <div class="scrollDv">
+                    <div class="scrollbar-inner">
+                        <div class="subtitle" >
+                            <span class="span">레이어</span>
+                            <select name="baseMapLayer" id="baseMapLayer" title="배경지도종류" class="form-control" >
+                                <option value="Base">기본지도</option>
+                                <option value="gray">회색지도</option>
+                                <option value="midnight">야간지도</option>
+                                <option value="Satellite">영상지도</option>
+                                <option value="Hybrid">영상POI</option>
+                            </select>
+                        </div>
+                        <ul id="tree1" class="ztree" style="margin-top: 13px;"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="lnbmenu5" class="sbmenu">
+            <div class="title">경로검색</div>
+            <div class="bd">
+                <ul class="search_result" id="route_result">
+                    <li><a href="javascript:route('1동')" >1동</a></li>
+                    <li><a href="javascript:route('2동')" >2동</a></li>
+                    <li><a href="javascript:route('3동')" >3동</a></li>
+                    <li><a href="javascript:route('4동')" >4동</a></li>
+                    <li><a href="javascript:route('5동')" >5동</a></li>
+                    <li><a href="javascript:route('6동')" >6동</a></li>
+                    <li><a href="javascript:route('7동')" >7동</a></li>
+                    <li><a href="javascript:route('8동')" >8동</a></li>
+                    <li><a href="javascript:route('9동')" >9동</a></li>
+                    <li><a href="javascript:route('10동')" >10동</a></li>
+                </ul>
+                <div class="search_wrap">
+                </div>
+                <div>
+                    <div>상세결과</div>
+                    <ul class="search_result" id="route_detail_result">
+
+                    </ul>
+                </div>
+                
+            </div>
+        </div>
+    </div><!--//lnb  -->
+</div>
+<div id="toolbar">
+  <table>
+    <tbody data-bind="foreach: layers">
+      <tr data-bind="css: { up: $parent.upLayer === $data, down: $parent.downLayer === $data }">
+        <td><input class ="chk" type="checkbox" data-bind="checked: show"></td>
+        <td>
+          <span data-bind="text: name, visible: !$parent.isSelectableLayer($data)"></span>
+          <select data-bind="visible: $parent.isSelectableLayer($data), options: $parent.baseLayers, optionsText: 'name', value: $parent.selectedLayer"></select>
+        </td>
+        <td>
+          <input type="range" min="0" max="1" step="0.01" data-bind="value: alpha, valueUpdate: 'input'">
+        </td>
+        <td>
+          <button type="button" class="cesium-button" data-bind="click: function() { $parent.raise($data, $index()); }, visible: $parent.canRaise($index())">
+            ▲
+          </button>
+        </td>
+        <td>
+          <button type="button" class="cesium-button" data-bind="click: function() { $parent.lower($data, $index()); }, visible: $parent.canLower($index())">
+            ▼
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<script type="text/javascript">
+
+    $("#lnb > ul > li > a").on("click",function () {
+        var idx = $("#lnb > ul > li > a").index(this);
+        var num = parseInt(idx + 1);
+        chnav = $(this).parent();
+        shownav = $(this).attr("href");
+        //$("#fromDt").datepicker("destroy");
+
+        if (chnav.hasClass("active")) {
+        chnav.removeClass("active")
+        $("#lnb > ul > li > ul").removeClass("on")
+        $("#lnb").find(".sbmenu").removeClass("active")
+        //$("#lnbmenu"+num).removeClass("active")
+        $(".lyrpop").dialog("close");
+
+        } else {
+        $("#lnb > ul > li").removeClass("active")
+        $("#lnb").find(".sbmenu").removeClass("active")
+        chnav.addClass("active")
+        //$("#lnb").find(shownav).addClass("active");
+        $("#lnbmenu" + num).addClass("active");
+
+        }
+    });
+
+    $(".tab_wrap > .tab2").on("click",function () {
+        $(".tab_wrap > .tab2").removeClass('on')
+        $(this).addClass('on');
+    });
+
+    var initCall = function(){ 
+    $.ajax({
+		type : "get",
+		url : '/json/layerTree3D.json' ,
+		
+		dataType : 'json',
+		async : false,
+		//jsonpCallback:"parseResponse",
+		success : function(data) {
+       
+            console.log(data);
+
+		},
+		error : function(xhr, stat, err) {
+		}
+	});
+}   
+initCall();
+Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzNjYyMzk1MC1lYjUyLTQ0NWMtYjUxMS02YTE1ZjJmZTY5M2UiLCJpZCI6Nzk1NiwiaWF0IjoxNjMyODAxMTEyfQ._gCt7u-pr1dKByvZshBO3zC-sulLwYQCoF-khAflgqU';
+
+    // Initialize the Cesium Viewer in the HTML element with the `cesiumContainer` ID.
+    const viewer = new Cesium.Viewer('cesiumContainer', {
+      baseLayerPicker: false,
+      terrainProvider: Cesium.createWorldTerrain()
+    }); 
+    
+    //viewer.scene.useWebVR = true; //vr 추가 옵션  stereoscopic 
+
+viewer.scene.globe.depthTestAgainstTerrain = true;
+
+const imageryLayers = viewer.imageryLayers;
+
+const viewModel = {
+  layers: [],
+  baseLayers: [],
+  upLayer: null,
+  downLayer: null,
+  selectedLayer: null,
+  isSelectableLayer: function (layer) {
+    return this.baseLayers.indexOf(layer) >= 0;
+  },
+  raise: function (layer, index) {
+    imageryLayers.raise(layer);
+    viewModel.upLayer = layer;
+    viewModel.downLayer = viewModel.layers[Math.max(0, index - 1)];
+    updateLayerList();
+    window.setTimeout(function () {
+      viewModel.upLayer = viewModel.downLayer = null;
+    }, 10);
+  },
+  lower: function (layer, index) {
+    imageryLayers.lower(layer);
+    viewModel.upLayer =
+      viewModel.layers[
+        Math.min(viewModel.layers.length - 1, index + 1)
+      ];
+    viewModel.downLayer = layer;
+    updateLayerList();
+    window.setTimeout(function () {
+      viewModel.upLayer = viewModel.downLayer = null;
+    }, 10);
+  },
+  canRaise: function (layerIndex) {
+    return layerIndex > 0;
+  },
+  canLower: function (layerIndex) {
+    return layerIndex >= 0 && layerIndex < imageryLayers.length - 1;
+  },
+};
+const baseLayers = viewModel.baseLayers;
+
+Cesium.knockout.track(viewModel);
+
+function setupLayers() {
+  // Create all the base layers that this example will support.
+  // These base layers aren't really special.  It's possible to have multiple of them
+  // enabled at once, just like the other layers, but it doesn't make much sense because
+  // all of these layers cover the entire globe and are opaque.
+  addBaseLayerOption("Bing Maps Aerial", undefined); // the current base layer
+  addBaseLayerOption(
+    "Bing Maps Road",
+    Cesium.createWorldImagery({
+      style: Cesium.IonWorldImageryStyle.ROAD,
+    })
+  );
+  addBaseLayerOption(
+    "ArcGIS World Street Maps",
+    new Cesium.ArcGisMapServerImageryProvider({
+      url:
+        "https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer",
+    })
+  );
+  addBaseLayerOption(
+    "OpenStreetMaps",
+    new Cesium.OpenStreetMapImageryProvider()
+  );
+  addBaseLayerOption(
+    "Stamen Maps",
+    new Cesium.OpenStreetMapImageryProvider({
+      url: "https://stamen-tiles.a.ssl.fastly.net/watercolor/",
+      fileExtension: "jpg",
+      credit:
+        "Map tiles by Stamen Design, under CC BY 3.0. Data by OpenStreetMap, under CC BY SA.",
+    })
+  );
+  addBaseLayerOption(
+    "Natural Earth II (local)",
+    new Cesium.TileMapServiceImageryProvider({
+      url: Cesium.buildModuleUrl("Assets/Textures/NaturalEarthII"),
+    })
+  );
+  addBaseLayerOption(
+    "USGS Shaded Relief (via WMTS)",
+    new Cesium.WebMapTileServiceImageryProvider({
+      url:
+        "https://basemap.nationalmap.gov/arcgis/rest/services/USGSShadedReliefOnly/MapServer/WMTS",
+      layer: "USGSShadedReliefOnly",
+      style: "default",
+      format: "image/jpeg",
+      tileMatrixSetID: "default028mm",
+      maximumLevel: 19,
+      credit: "U. S. Geological Survey",
+    })
+  );
+  addBaseLayerOption(
+    "Satellite",
+    new Cesium.WebMapTileServiceImageryProvider({
+      url : 'https://api.vworld.kr/req/wmts/1.0.0/CEB52025-E065-364C-9DBA-44880E3B02B8/Satellite/{TileMatrix}/{TileRow}/{TileCol}.jpeg',
+      layer : 'Satellite',
+      style : 'default',
+      format : 'image/jpeg',
+     tileMatrixSetID : '',
+      maximumLevel: 19
+   })
+  );
+
+
+
+  // Create the additional layers
+  addAdditionalLayerOption(
+    "United States GOES Infrared",
+    new Cesium.WebMapServiceImageryProvider({
+      url:
+        "https://mesonet.agron.iastate.edu/cgi-bin/wms/goes/conus_ir.cgi?",
+      layers: "goes_conus_ir",
+      credit: "Infrared data courtesy Iowa Environmental Mesonet",
+      parameters: {
+        transparent: "true",
+        format: "image/png",
+      },
+    })
+  );
+  addAdditionalLayerOption(
+    "United States Weather Radar",
+    new Cesium.WebMapServiceImageryProvider({
+      url:
+        "https://mesonet.agron.iastate.edu/cgi-bin/wms/nexrad/n0r.cgi?",
+      layers: "nexrad-n0r",
+      credit: "Radar data courtesy Iowa Environmental Mesonet",
+      parameters: {
+        transparent: "true",
+        format: "image/png",
+      },
+    })
+  );
+  addAdditionalLayerOption(
+    "TileMapService Image",
+    new Cesium.TileMapServiceImageryProvider({
+      url: "../images/cesium_maptiler/Cesium_Logo_Color",
+    }),
+    0.2
+  );
+
+  addAdditionalLayerOption(
+    "Grid",
+    new Cesium.GridImageryProvider(),
+    1.0,
+    false
+  );
+  addAdditionalLayerOption(
+    "Tile Coordinates",
+    new Cesium.TileCoordinatesImageryProvider(),
+    1.0,
+    false
+  );
+  addAdditionalLayerOption(
+    "lt_c_uq111",
+    new Cesium.WebMapServiceImageryProvider({
+          url : new Cesium.Resource({
+              url : "http://api.vworld.kr/req/wms?key=CEB52025-E065-364C-9DBA-44880E3B02B8&domain=http://localhost:8080",
+              proxy: new Cesium.DefaultProxy('https://map.vworld.kr/proxy.do?url=')
+          }),
+          layers: 'lt_c_uq111',
+          parameters: {
+          transparent: true,
+          format: "image/png"
+          ,version:"1.3.0",CRS:"EPSG:4326"
+          },
+      }),
+    1.0,
+    false
+  );
+
+}
+
+
+function addBaseLayerOption(name, imageryProvider) {
+  let layer;
+  if (typeof imageryProvider === "undefined") {
+    layer = imageryLayers.get(0);
+    viewModel.selectedLayer = layer;
+  } else {
+    layer = new Cesium.ImageryLayer(imageryProvider);
+  }
+
+  layer.name = name;
+  baseLayers.push(layer);
+}
+
+function addAdditionalLayerOption(name, imageryProvider, alpha, show) {
+  const layer = imageryLayers.addImageryProvider(imageryProvider);
+  layer.alpha = Cesium.defaultValue(alpha, 0.5);
+  layer.show = Cesium.defaultValue(show, true);
+  layer.name = name;
+  //Cesium.knockout.track(layer, ["alpha", "show", "name"]);
+}
+
+function updateLayerList() {
+  const numLayers = imageryLayers.length;
+  viewModel.layers.splice(0, viewModel.layers.length);
+  for (let i = numLayers - 1; i >= 0; --i) {
+    viewModel.layers.push(imageryLayers.get(i));
+  }
+}
+
+setupLayers();
+updateLayerList();
+
+//Bind the viewModel to the DOM elements of the UI that call for it.
+const toolbar = document.getElementById("toolbar");
+Cesium.knockout.applyBindings(viewModel, toolbar);
+
+Cesium.knockout.getObservable(viewModel, "selectedLayer").subscribe(function (baseLayer) {
+    // Handle changes to the drop-down base layer selector.
+    let activeLayerIndex = 0;
+    const numLayers = viewModel.layers.length;
+    for (let i = 0; i < numLayers; ++i) {
+      if (viewModel.isSelectableLayer(viewModel.layers[i])) {
+        activeLayerIndex = i;
+        break;
+      }
+    }
+    const activeLayer = viewModel.layers[activeLayerIndex];
+    const show = activeLayer.show;
+    const alpha = activeLayer.alpha;
+    imageryLayers.remove(activeLayer, false);
+    imageryLayers.add(baseLayer, numLayers - activeLayerIndex - 1);
+    baseLayer.show = show;
+    baseLayer.alpha = alpha;
+    updateLayerList();
+  });
+
+
+
+    Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzNjYyMzk1MC1lYjUyLTQ0NWMtYjUxMS02YTE1ZjJmZTY5M2UiLCJpZCI6Nzk1NiwiaWF0IjoxNjMyODAxMTEyfQ._gCt7u-pr1dKByvZshBO3zC-sulLwYQCoF-khAflgqU';
+
+    // Initialize the Cesium Viewer in the HTML element with the `cesiumContainer` ID.
+
+    //viewer.scene.useWebVR = true; //vr 추가 옵션  stereoscopic 
+
+viewer.scene.globe.depthTestAgainstTerrain = true;
+
+
+var tileset = new Cesium.Cesium3DTileset({
+  url: "https://xdworld.vworld.kr/TDServer/services/facility_LOD4/Gyeonggi-do/Seongnam-si/tileset.json",
+});
+
+</script>
+</body>
+</html>
