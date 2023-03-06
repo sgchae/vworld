@@ -21,11 +21,15 @@
 <script type='text/javascript' src='js/jquery.ztree.excheck.js'></script>
 <script type='text/javascript' src='js/jquery.ztree.exedit.js'></script>
 <script type='text/javascript' src='js/jquery.scrollbar.min.js'></script>
-<!-- <script type='text/javascript' src='js/dosidong.js'></script>
-<script type='text/javascript' src='js/cluster.js'></script>
+<script type='text/javascript' src='js/dosidong.js'></script>
+<!-- <script type='text/javascript' src='js/cluster.js'></script>
 <script type='text/javascript' src='js/route.js'></script>-->
-<script type='text/javascript' src='js/search.js'></script>
+
 <script type='text/javascript' src='js/ztree.js'></script> 
+
+<script type='text/javascript' src='js/turf.min.js'></script> 
+
+
 <!--
 https://openlayers.org/en/v6.4.3/build/ol.js
 https://openlayers.org/en/v5.3.0/build/ol.js
@@ -48,7 +52,7 @@ https://openlayers.org/en/v3.20.1/css/ol.css
 <div id="wrap">
     <div id="cesiumContainer" style="width: 100%; ; left: 0px; top: 0px"></div>
     <div class="main-rr-menus">
-        <a href="#" class="main-r-menu mr001"></a>
+        <a href="#" class="main-r-menu mr001" onclick="javascript:findNavigator();">위치정보</a>
         <a href="javascript:clear();" class="main-r-menu mr002">지도<br>초기화</a>
         <a href="#" class="main-r-menu mr003" style="display: none;"></a>
         <a href="#" class="main-r-menu mr004" style="display: none;"></a>
@@ -66,13 +70,13 @@ https://openlayers.org/en/v3.20.1/css/ol.css
                 <a href="#" class="lnb002" name="search" title="주소검색">주소<br>검색</a>
             </li>
             <li>
-                <a href="#" class="lnb003" name="fac" title="구역통계">구현<br>예정</a>
+                <a href="#" class="lnb003" name="fac" title="구역통계">구역<br>통계</a>
             </li>
             <li>
-                <a href="#" class="lnb004" name="mng" title="영역조회">구현<br>예정</a>
+                <a href="#" class="lnb004" name="mng" title="분석기능">분석<br>기능</a>
             </li>
             <li>
-                <a href="#" class="lnb005" name="type" title="경로검색">구현<br>예정</a>
+                <a href="#" class="lnb005" name="type" title="경로검색">경로<br>검색</a>
             </li>
         </ul>
         <div id="lnbmenu1" class="sbmenu">
@@ -91,6 +95,7 @@ https://openlayers.org/en/v3.20.1/css/ol.css
                             </select>
                         </div>
                         <div class="range-list">
+                            <div id="range-noti" style="display: none;">휠버튼 클릭 시 조회</div>
                             <ul id="range-ul">
                             </ul>
                             
@@ -154,21 +159,37 @@ https://openlayers.org/en/v3.20.1/css/ol.css
         </div>
 
         <div id="lnbmenu4" class="sbmenu">
-            <div class="title">영역 조회</div>
+            <div class="title">분석기능</div>
             <div class="bd">
                 <div class="scrollDv">
                     <div class="scrollbar-inner">
-                        <div class="subtitle" >
-                            <span class="span">레이어</span>
-                            <select name="baseMapLayer" id="baseMapLayer" title="배경지도종류" class="form-control" >
-                                <option value="Base">기본지도</option>
-                                <option value="gray">회색지도</option>
-                                <option value="midnight">야간지도</option>
-                                <option value="Satellite">영상지도</option>
-                                <option value="Hybrid">영상POI</option>
-                            </select>
+                        <div class="tab_wrap">
+                            <a href="javascript:setMeasureLine();" class="tab2 on">거리재기</a>
+                            <a href="javascript:setMeasureArea();" class="tab2">면적측정</a>
+                            <a href="javascript:setMeasureHeight();" class="tab2">높이</a>
                         </div>
-                        <ul id="tree1" class="ztree" style="margin-top: 13px;"></ul>
+                        <ul class="search_result" id="">
+                            <li>
+                                <a href="#" class="anlyNotice">우클릭 시 측정기능 종료</a>
+                            </li>
+                        </ul>
+
+                        <div class="tab_wrap">
+                            <a href="javascript:setModel('model/tree.glb');" class="tab2">가로수</a>
+                            <a href="javascript:setModel('model/car.glb');" class="tab2">자동차</a>
+                            <a href="javascript:setModel('model/building.glb');" class="tab2">건물</a>
+                        </div>
+                        <ul class="search_result" id="">
+                            <li>
+                                <a href="#" class="anlyNotice">휠클릭 시 생성, 우클릭 시 측정기능 종료</a>
+                            </li>
+                        </ul>
+
+                        <div>
+                            <p><span>모델정보</span></p>
+                            <div id="selectModel"></div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -254,13 +275,49 @@ knockout 세슘 제공 MVVM  https://github.com/knockout/knockout   https://knoc
 		}
 	});
 }   
+
+
+var findNavigator = function(){
+    var options = {
+    timeout: 1000
+    };
+    navigator.geolocation.getCurrentPosition(
+    function(position){
+        mx = position.coords.longitude
+        my = position.coords.latitude
+        
+        move(mx,my,500);
+    }
+    , $.errorCallback,
+    options);
+    
+    $.errorCallback = function () {
+        alert("ssl 적용");
+    }
+
+}
+
 initCall();
 
 Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzNjYyMzk1MC1lYjUyLTQ0NWMtYjUxMS02YTE1ZjJmZTY5M2UiLCJpZCI6Nzk1NiwiaWF0IjoxNjMyODAxMTEyfQ._gCt7u-pr1dKByvZshBO3zC-sulLwYQCoF-khAflgqU';
 
 // Initialize the Cesium Viewer in the HTML element with the `cesiumContainer` ID.
 const viewer = new Cesium.Viewer('cesiumContainer', {
-    terrainProvider: Cesium.createWorldTerrain()
+    terrainProvider: Cesium.createWorldTerrain(),
+    navigationHelpButton: false,
+    animation: true,
+    timeline: true,
+    navigationHelpButton: {
+    // 둘러보기 컨트롤 스타일 변경
+    className: 'cesium-navigation-help-button-custom',
+    container: null,
+    instructionsInitiallyVisible: true,
+    tooltip: '둘러보기',
+    showInstructions: true,
+    // 둘러보기 컨트롤 위치 변경
+    offsetX: 0,
+    offsetY: 50
+    }
 }); 
 var imageryLayers = viewer.imageryLayers;
 imageryLayers.get(0).name="bing"
@@ -270,9 +327,9 @@ const baseLayers = viewModel.baseLayers;
 //viewer.scene.useWebVR = true; //vr 추가 옵션  stereoscopic 
 
 viewer.scene.globe.depthTestAgainstTerrain = true;
-
+scene = viewer.scene;
 var tileset = new Cesium.Cesium3DTileset({
-  url: "https://xdworld.vworld.kr/TDServer/services/facility_LOD4/Gyeonggi-do/Seongnam-si/tileset.json",
+ // url: "https://xdworld.vworld.kr/TDServer/services/facility_LOD4/Gyeonggi-do/Seongnam-si/tileset.json",
 });
 
 // Add a WMS imagery layer 국가공간정보포털 레이어
@@ -335,6 +392,15 @@ addAdditionalLayerOption(
 );
 updateLayerList()
 
+var clear = function(){
+
+    viewer.entities.removeAll();
+    viewer.dataSources.removeAll()
+}
 </script>
+<script type='text/javascript' src='js/measure.js'></script> 
+<script type='text/javascript' src='js/search.js'></script>
+<script type='text/javascript' src='js/wfs.js'></script>
+<script type='text/javascript' src='js/model.js'></script>
 </body>
 </html>
