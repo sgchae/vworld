@@ -185,7 +185,7 @@ font-family:"나눔스퀘어",'NanumSquare', sans-serif; font-weight: 700; heigh
     background-color: transparent;
     background-repeat: no-repeat;
     background-attachment: scroll;
-    background-image: url(../../images/ztree/metro.png);}
+    background-image: url(../images/ztree/metro.png);}
 /*lnbmenu2*/
 .search_wrap{border:1px solid #d5d5d5; margin-top:30px;}
 .search_wrap:after{content: ""; display: block; clear: both;}
@@ -222,10 +222,10 @@ margin-top:30px;}
 background: #fff; border:1px solid #4997f6; z-index: 99}
 .main-r-menu{display: block; width:100%; height:51px; border-top:1px solid #e2e2e2;}
 .main-r-menu:first-child{border-top:none; height:50px;}
-.main-r-menu.mr001{background: url(/assets/../images/ico_mr1.png) center no-repeat;}
-.main-r-menu.mr002{background: url(/assets/../images/ico_mr2.png) center no-repeat;}
-.main-r-menu.mr003{background: url(/assets/../images/ico_mr3.png) center no-repeat;}
-.main-r-menu.mr004{background: url(/assets/../images/ico_mr4.png) center no-repeat;}
+.main-r-menu.mr001{background: url(../images/ico_mr1.png) center no-repeat;}
+.main-r-menu.mr002{background: url(../images/ico_mr2.png) center no-repeat;}
+.main-r-menu.mr003{background: url(../images/ico_mr3.png) center no-repeat;}
+.main-r-menu.mr004{background: url(../images/ico_mr4.png) center no-repeat;}
 .main-r-menu.mr003.active{background: #4997f6 url(/assets/../images/ico_mr3h.png) center no-repeat;}
 .main-r-menu.mr004.active{background: #4997f6 url(/assets/../images/ico_mr4h.png) center no-repeat;}
 .main-r-menu.mr005{background: url(/assets/../images/ico_mr5.png) center no-repeat;}
