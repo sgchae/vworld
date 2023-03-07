@@ -52,10 +52,10 @@ https://openlayers.org/en/v3.20.1/css/ol.css
 <div id="wrap">
     <div id="cesiumContainer" style="width: 100%; ; left: 0px; top: 0px"></div>
     <div class="main-rr-menus">
-        <a href="#" class="main-r-menu mr001" onclick="javascript:findNavigator();">위치정보</a>
+        <a href="#" class="main-r-menu mr001" onclick="javascript:findNavigator();">위치<br>정보</a>
         <a href="javascript:clear();" class="main-r-menu mr002">지도<br>초기화</a>
         <a href="#" class="main-r-menu mr003" style="display: none;"></a>
-        <a href="#" class="main-r-menu mr004" style="display: none;"></a>
+        <a href="#" class="main-r-menu mr004" onclick="javascript:around();" >둘러<br>보기</a>
         <a href="#" class="main-r-menu mr005" style="display: none;"></a>
         <a href="#" class="main-r-menu mr006"style="display: none;"></a>
         <a href="#" class="main-r-menu mr007 active" style="display: none;"></a>
@@ -64,7 +64,7 @@ https://openlayers.org/en/v3.20.1/css/ol.css
     <div id="lnb">
         <ul>
             <li>
-                <a href="#" class="lnb001" name="layer" title="레이어 목록">레이어<br>목록</a>
+                <a href="#" class="lnb001" name="layer" title="레이어 제어">레이어<br>제어</a>
             </li>
             <li onclick="$('[name=query]').val('');$('[name=type]').val('PLACE');$('[name=category]').val('')" >
                 <a href="#" class="lnb002" name="search" title="주소검색">주소<br>검색</a>
@@ -76,11 +76,11 @@ https://openlayers.org/en/v3.20.1/css/ol.css
                 <a href="#" class="lnb004" name="mng" title="분석기능">분석<br>기능</a>
             </li>
             <li>
-                <a href="#" class="lnb005" name="type" title="경로검색">경로<br>검색</a>
+                <a href="#" class="lnb005" name="type" title="파일업로드">파일<br>업로드</a>
             </li>
         </ul>
         <div id="lnbmenu1" class="sbmenu">
-            <div class="title">레이어 목록</div>
+            <div class="title">레이어 제어</div>
             <div class="bd">
                 <div class="scrollDv ls3t">
                     <div class="scrollbar-inner">
@@ -159,7 +159,7 @@ https://openlayers.org/en/v3.20.1/css/ol.css
         </div>
 
         <div id="lnbmenu4" class="sbmenu">
-            <div class="title">분석기능</div>
+            <div class="title">측정기능 / 분석기능</div>
             <div class="bd">
                 <div class="scrollDv">
                     <div class="scrollbar-inner">
@@ -177,7 +177,7 @@ https://openlayers.org/en/v3.20.1/css/ol.css
                         <div class="tab_wrap">
                             <a href="javascript:setModel('model/tree.glb');" class="tab2">가로수</a>
                             <a href="javascript:setModel('model/car.glb');" class="tab2">자동차</a>
-                            <a href="javascript:setModel('model/building.glb');" class="tab2">건물</a>
+                            <a href="javascript:setModel('model/house.glb');" class="tab2">건물</a>
                         </div>
                         <ul class="search_result" id="">
                             <li>
@@ -185,40 +185,65 @@ https://openlayers.org/en/v3.20.1/css/ol.css
                             </li>
                         </ul>
 
-                        <div>
-                            <p><span>모델정보</span></p>
+                        <div class="model_edit"  style="display: none;" >
+                            <p class="range-list"><span style="font-size: 1em;">선택 모델정보</span> <span onclick="javascript:viewer.entities.remove(targetModel.id);" class="center_close"></span></p>
                             <div id="selectModel"></div>
+                            <div id="editorContainer" >
+                                <h4>모델 편집기</h4>
+                                <div class="form-group">
+                                    <p><label for="model_size">크기 조절</label></p>
+                                    <input type="range" class="form-control-range" id="model_size" min="0.1" max="100" step="0.1" value="1" />
+                                    <input type="text" id="model_size_value" name="model_size_value" value="1">
+                                </div>
+                                <div class="form-group">
+                                    <p><label for="model_x">Heading 값</label></p>
+                                    <input type="range" class="form-control-range" id="model_x" min="0" max="360" step="1" value="0" />
+                                    <input type="text" id="model_x_value" name="model_x_value" value="0">
+                                </div>
+                                <div class="form-group">
+                                    <p><label for="model_y">Pitch 값</label></p>
+                                    <input type="range" class="form-control-range" id="model_y" min="0" max="360" step="1" value="0" />
+                                    <input type="text" id="model_y_value" name="model_y_value" value="0">
+                                </div>
+                                <div class="form-group">
+                                    <p><label for="model_z">roll 값</label></p>
+                                    <input type="range" class="form-control-range" id="model_z" min="0" max="360" step="1" value="0" />
+                                    <input type="text" id="model_z_value" name="model_z_value" value="0">
+                                </div>
+                                <div class="form-group">
+                                    <p><label for="rotateZInput">높이 값</label></p>
+                                    <input type="range" class="form-control-range" id="model_h" min="0" max="2000" step="1" value="0" />
+                                    <input type="text" id="model_h_value" name="model_h_value" value="0" style="width: 78px;">
+                                </div>
+                            </div>
                         </div>
-
                     </div>
                 </div>
             </div>
         </div>
-
         <div id="lnbmenu5" class="sbmenu">
-            <div class="title">경로검색</div>
+            <div class="title">파일 업로드</div>
             <div class="bd">
-                <ul class="search_result" id="route_result">
-                    <li><a href="javascript:route('1동')" >1동</a></li>
-                    <li><a href="javascript:route('2동')" >2동</a></li>
-                    <li><a href="javascript:route('3동')" >3동</a></li>
-                    <li><a href="javascript:route('4동')" >4동</a></li>
-                    <li><a href="javascript:route('5동')" >5동</a></li>
-                    <li><a href="javascript:route('6동')" >6동</a></li>
-                    <li><a href="javascript:route('7동')" >7동</a></li>
-                    <li><a href="javascript:route('8동')" >8동</a></li>
-                    <li><a href="javascript:route('9동')" >9동</a></li>
-                    <li><a href="javascript:route('10동')" >10동</a></li>
-                </ul>
-                <div class="search_wrap">
-                </div>
-                <div>
-                    <div>상세결과</div>
-                    <ul class="search_result" id="route_detail_result">
+                <div class="scrollDv ls3t">
+                    <div class="scrollbar-inner">
+                        <div class="search_wrap">
+                            <label for="lnb2_search">GLB/GLTF</label>
+                            <input type="file" id="up_file" enctype="multipart/form-data">
 
-                    </ul>
+                            <a href="javascript:fileload();" class="btn btn_prm_new s_btn" >조회</a>
+                        </div>
+                        <div class="range-list">
+                            
+                            <div id="range-noti"></div>
+                            <ul id="">
+                                <li>
+                                    <a href="#" >조회 클릭 후 왼쪽 버튼으로 해당위치에 모델 생성</a>
+                                </li>
+                            </ul>
+                            
+                        </div>
+                    </div>
                 </div>
-                
             </div>
         </div>
     </div><!--//lnb  -->
@@ -241,7 +266,7 @@ knockout 세슘 제공 MVVM  https://github.com/knockout/knockout   https://knoc
         $("#lnb > ul > li > ul").removeClass("on")
         $("#lnb").find(".sbmenu").removeClass("active")
         //$("#lnbmenu"+num).removeClass("active")
-        $(".lyrpop").dialog("close");
+        //$(".lyrpop").dialog("close");
 
         } else {
         $("#lnb > ul > li").removeClass("active")
@@ -300,10 +325,10 @@ var findNavigator = function(){
 initCall();
 
 Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzNjYyMzk1MC1lYjUyLTQ0NWMtYjUxMS02YTE1ZjJmZTY5M2UiLCJpZCI6Nzk1NiwiaWF0IjoxNjMyODAxMTEyfQ._gCt7u-pr1dKByvZshBO3zC-sulLwYQCoF-khAflgqU';
-
+var terrainProvider = Cesium.createWorldTerrain()
 // Initialize the Cesium Viewer in the HTML element with the `cesiumContainer` ID.
 const viewer = new Cesium.Viewer('cesiumContainer', {
-    terrainProvider: Cesium.createWorldTerrain(),
+    terrainProvider: terrainProvider,
     navigationHelpButton: false,
     animation: true,
     timeline: true,

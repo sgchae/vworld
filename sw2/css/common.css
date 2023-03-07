@@ -196,7 +196,7 @@ margin-left:6px; margin-top:10px; border:1px solid #d5d5d5; background: #f6f7f9;
 font-size:14px; height: 28px;}
 .s_btn{height:42px; line-height: 48px; width:244px; margin:20px auto 0px;  padding: 4px;   background: #4997f6;   border: 1px solid #4997f6;  color: white;}
 .tab_wrap:after{content: ""; display: block; clear: both; border-bottom:3px solid #4997f6;}
-.tab_wrap a{display: block; float: left; width:104px; margin-left:3px; background: #abb2c2;
+.tab_wrap a{display: block; float: left; width:101px; margin-left:3px; background: #abb2c2;
 height: 38px; border-bottom:3px solid #fff; line-height:35px; color:#fff; font-size:14px; text-align: center;
 margin-top:30px;}
 .tab_wrap a.on{ border-bottom:3px solid #4997f6; background: #4997f6}
@@ -399,3 +399,19 @@ float: left;}
  
 .scrollbar-inner > .scroll-element.scroll-x.scroll-scrolly_visible .scroll-element_size { left: -12px; }
 .scrollbar-inner > .scroll-element.scroll-y.scroll-scrollx_visible .scroll-element_size { top: -12px; }
+
+/**
+모델 편집기 부분
+*/
+.form-group{ text-align: left;}
+.form-group p{float: left; width: 100px;}
+.form-group input[type="text"]{
+    width: 46px;
+    height: 20px;
+    border: 1px solid #d5d5d5;
+    background: #f1f1f1;
+    color: #6a707e;
+    font-size: 14px;
+    text-indent: 11px;
+}
+.form-group input[type="range"]{height: 10px;}

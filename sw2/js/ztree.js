@@ -249,7 +249,7 @@ const viewModel = {
   },
 };
 
-$(document).on('input','[type=range]',function(e){ // 레인지 수정 시 알파 값 조절
+$(document).on('input','[id*=range_]',function(e){ // 레인지 수정 시 알파 값 조절 행정주제도
   var val = $(this).val();
   console.log("range value="+val);
   var lname = $(this).attr("id").replace("range_","");
