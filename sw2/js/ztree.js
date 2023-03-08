@@ -33,27 +33,13 @@ var setting = {
     }
   };
 
-  
+  //ztree의 레이어 관리 샘플 예시 , 브이월드 json 기반으로 레이어 올리고 나머지는 하드 코딩?
   var treeArray = [
     // {"id": 10, "pId": 0, "name": "미구현", "isParent": true, "closed": true, "nocheck": true},
     // {"id": 11, "pId": 10, "name": "광역시도"},
     // {"id": 12, "pId": 10, "name": "시군구"},
     // {"id": 13, "pId": 10, "name": "읍면동"},
     // {"id": 13, "pId": 10, "name": "리"},
-
-    // {"id": 20, "pId": 0, "name": "미구현", "isParent": true, "closed": true, "nocheck": true},
-    // {"id": "vworld_bonbun", "pId": 20, "name": "연속지적도"},
-    // {"id": "lx_base", "pId": 20, "name": "LX기본도"},
-
-    // {"id": 30, "pId": 0, "name": "미구현", "isParent": true, "closed": true, "nocheck": true},
-    // {"id": "fac_39", "pId": 30, "name": "3차원건물", checked : false},
-    // {"id": "fac_40", "pId": 30, "name": "POI", checked : false},
-
-    // {"id": 40, "pId": 0, "name": "해외출입국", "isParent": true, "open": true, "nocheck": true},
-    // {"id": "immigrant_01", "pId": 40, "name": "1번입국자"},
-    // {"id": "immigrant_02", "pId": 40, "name": "2번입국자"},
-    // {"id": "immigrant_03", "pId": 40, "name": "3번입국자"},
-    // {"id": "immigrant_04", "pId": 40, "name": "4번입국자"},
   ];
 var DICTIONARY,GroupLIST,LIST;
   $.ajax({
@@ -72,7 +58,7 @@ var DICTIONARY,GroupLIST,LIST;
         treeArray.push({"id":e.GRPIDE, "pId": 0, "name": e.GRPNAM, "isParent": true, "closed": true, "nocheck": true})
 
       })
-      data.LIST.forEach(function(e){
+      data.LIST.forEach(function(e){ // 자식들 
         treeArray.push({"id":e.LYRIDE, "pId": e.GRPIDE, "name": e.LAKNAM,  "closed": true, "LAENAM" : e.LAENAM, "WFSNAM":e.WFSNAM})
       })
 
@@ -140,6 +126,35 @@ function myOnCheck(event, treeId, treeNode) {
 
     if(treeNode.checked){ //체크 true
       $('#range-noti').show()
+
+      //하드 코딩 3D 제어 
+      if(treeNode.name=='3D건물'){
+
+        tileset.show = true;
+        return;
+      }
+
+      if(treeNode.name=='3DTiles'){
+        etri_tileset = new Cesium.Cesium3DTileset({
+          //여산휴게소  url: "http://129.254.221.88:9009/data/3dtiles/wgs84/%EC%97%AC%EC%82%B0%ED%9C%B4%EA%B2%8C%EC%86%8C_2021_b_d/test.json",
+          //  url: "http://129.254.221.88:9009/data/3dtiles/wgs84/서울시/Zip/Seoul.json",
+            url: "http://129.254.221.88:9009/data/3dtiles/wgs84/yeouido_2201_b_d/test.json",
+          });
+          etri_tileset.readyPromise
+          .then(function (etri_tileset) {
+            viewer.scene.primitives.add(etri_tileset);
+            viewer.zoomTo(
+              etri_tileset,
+              new Cesium.HeadingPitchRange(
+                0.0,
+                -0.5,
+                etri_tileset.boundingSphere.radius * 2.0
+              )
+            );
+          });
+        return;
+      }
+
       addAdditionalLayerOption(
         LAENAM,
         new Cesium.WebMapServiceImageryProvider({
@@ -163,7 +178,17 @@ function myOnCheck(event, treeId, treeNode) {
       <span id="close_${LAENAM}" class="center_close" onclick="triggerChk('${tid}')"></span></li>`;
       
     }else{
+      //하드 코딩 3D 제어 
+      if(treeNode.name=='3D건물'){
 
+        tileset.show = false;
+        return;
+      }
+
+      if(treeNode.name=='3DTiles'){
+        viewer.scene.primitives.remove(etri_tileset)
+        return;
+      }
 
         let removeLayer = null;
         viewModel.layers.forEach(function(flayer,i){
