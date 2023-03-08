@@ -69,15 +69,16 @@ https://openlayers.org/en/v3.20.1/css/ol.css
             <li onclick="$('[name=query]').val('');$('[name=type]').val('PLACE');$('[name=category]').val('')" >
                 <a href="#" class="lnb002" name="search" title="주소검색">주소<br>검색</a>
             </li>
+
+            <li>
+                <a href="#" class="lnb003" name="mng" title="분석기능">분석<br>기능</a>
+            </li>
+            <li>
+                <a href="#" class="lnb004" name="type" title="파일업로드">파일<br>업로드</a>
+            </li>
             <!-- <li>
-                <a href="#" class="lnb003" name="fac" title="구역통계">구역<br>통계</a>
+                <a href="#" class="lnb005" name="fac" title="구역통계">구역<br>통계</a>
             </li> -->
-            <li>
-                <a href="#" class="lnb004" name="mng" title="분석기능">분석<br>기능</a>
-            </li>
-            <li>
-                <a href="#" class="lnb005" name="type" title="파일업로드">파일<br>업로드</a>
-            </li>
         </ul>
         <div id="lnbmenu1" class="sbmenu">
             <div class="title">레이어 제어</div>
@@ -135,30 +136,9 @@ https://openlayers.org/en/v3.20.1/css/ol.css
                 </ul>
             </div>
         </div>
-        <div id="lnbmenu3" class="sbmenu">
-            <div class="title">행정구역</div>
-            <div class="bd2">
-                <select id="sido_code">
-                    <option>선택</option>
-                </select>
-                <select id="sigoon_code">
-                    <option>선택</option>
-                </select>
-                <select id="dong_code">
-                    <option>선택</option>
-                </select>
-                <select id="lee_code">
-                    <option>선택</option>
-                </select>
-            </div>
-            <div class="bd">
-                <ul class="search_result" id="code_result">
-                    
-                </ul>
-            </div>
-        </div>
 
-        <div id="lnbmenu4" class="sbmenu">
+
+        <div id="lnbmenu3" class="sbmenu">
             <div class="title">측정기능 / 분석기능</div>
             <div class="bd">
                 <div class="scrollDv">
@@ -221,7 +201,7 @@ https://openlayers.org/en/v3.20.1/css/ol.css
                 </div>
             </div>
         </div>
-        <div id="lnbmenu5" class="sbmenu">
+        <div id="lnbmenu4" class="sbmenu">
             <div class="title">파일 업로드</div>
             <div class="bd">
                 <div class="scrollDv ls3t">
@@ -246,6 +226,30 @@ https://openlayers.org/en/v3.20.1/css/ol.css
                 </div>
             </div>
         </div>
+
+    <!-- <div id="lnbmenu3" class="sbmenu">
+            <div class="title">행정구역</div>
+            <div class="bd2">
+                <select id="sido_code">
+                    <option>선택</option>
+                </select>
+                <select id="sigoon_code">
+                    <option>선택</option>
+                </select>
+                <select id="dong_code">
+                    <option>선택</option>
+                </select>
+                <select id="lee_code">
+                    <option>선택</option>
+                </select>
+            </div>
+            <div class="bd">
+                <ul class="search_result" id="code_result">
+                    
+                </ul>
+            </div>
+        </div> -->
+
     </div><!--//lnb  -->
 </div>
 
@@ -330,15 +334,15 @@ var terrainProvider = Cesium.createWorldTerrain()
 const viewer = new Cesium.Viewer('cesiumContainer', {
     terrainProvider: terrainProvider,
     navigationHelpButton: false,
-    animation: true,
-    timeline: true,
+    animation: false,
+    timeline: false,
     navigationHelpButton: {
     // 둘러보기 컨트롤 스타일 변경
     className: 'cesium-navigation-help-button-custom',
     container: null,
-    instructionsInitiallyVisible: true,
+    instructionsInitiallyVisible: false,
     tooltip: '둘러보기',
-    showInstructions: true,
+    showInstructions: false,
     // 둘러보기 컨트롤 위치 변경
     offsetX: 0,
     offsetY: 50
@@ -374,8 +378,11 @@ var tileset = new Cesium.Cesium3DTileset({
 //     );
 // });
 
-//세슘 OSM 빌딩
-viewer.scene.primitives.add(Cesium.createOsmBuildings());
+//세슘 OSM 빌딩 , 3D Tiles 선언
+var tileset = viewer.scene.primitives.add(Cesium.createOsmBuildings());
+var etri_tileset; 
+
+tileset.show = true;
 
 var moveCesium = function(x,y,z,h,p){
     viewer.camera.setView({
