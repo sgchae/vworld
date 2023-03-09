@@ -34,19 +34,6 @@ var setting = {
 
   
   var treeArray = [
-    {"id": 10, "pId": 0, "name": "미구현", "isParent": true, "closed": true, "nocheck": true},
-    {"id": 11, "pId": 10, "name": "광역시도"},
-    {"id": 12, "pId": 10, "name": "시군구"},
-    {"id": 13, "pId": 10, "name": "읍면동"},
-    {"id": 13, "pId": 10, "name": "리"},
-
-    {"id": 20, "pId": 0, "name": "미구현", "isParent": true, "closed": true, "nocheck": true},
-    {"id": "vworld_bonbun", "pId": 20, "name": "연속지적도"},
-    {"id": "lx_base", "pId": 20, "name": "LX기본도"},
-
-    {"id": 30, "pId": 0, "name": "미구현", "isParent": true, "closed": true, "nocheck": true},
-    {"id": "fac_39", "pId": 30, "name": "3차원건물", checked : false},
-    {"id": "fac_40", "pId": 30, "name": "POI", checked : false},
 
     {"id": 40, "pId": 0, "name": "해외출입국", "isParent": true, "open": true, "nocheck": true},
     {"id": "immigrant_01", "pId": 40, "name": "1번입국자"},

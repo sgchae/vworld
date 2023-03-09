@@ -26,6 +26,7 @@
 <script type='text/javascript' src='js/search.js'></script>
 <script type='text/javascript' src='js/route.js'></script>
 <script type='text/javascript' src='js/ztree.js'></script>
+
 <!--
 https://openlayers.org/en/v6.4.3/build/ol.js
 https://openlayers.org/en/v5.3.0/build/ol.js
@@ -49,14 +50,9 @@ https://openlayers.org/en/v3.20.1/css/ol.css
 
 <div id="wrap">
     <div class="main-rr-menus">
-        <a href="#" class="main-r-menu mr001"></a>
+
         <a href="javascript:clear();" class="main-r-menu mr002">지도<br>초기화</a>
-        <a href="#" class="main-r-menu mr003" style="display: none;"></a>
-        <a href="#" class="main-r-menu mr004" style="display: none;"></a>
-        <a href="#" class="main-r-menu mr005" style="display: none;"></a>
-        <a href="#" class="main-r-menu mr006"style="display: none;"></a>
-        <a href="#" class="main-r-menu mr007 active" style="display: none;"></a>
-        <a id="image-download" download="map.png"></a>
+
     </div>
     <div id="lnb">
         <ul>
@@ -70,7 +66,7 @@ https://openlayers.org/en/v3.20.1/css/ol.css
                 <a href="#" class="lnb003" name="fac" title="구역통계">구역<br>통계</a>
             </li>
             <li>
-                <a href="#" class="lnb005" name="type" title="경로검색">경로<br>검색</a>
+                <a href="#" class="lnb004" name="type" title="경로검색">경로<br>검색</a>
             </li>
         </ul>
         <div id="lnbmenu1" class="sbmenu">
@@ -78,16 +74,7 @@ https://openlayers.org/en/v3.20.1/css/ol.css
             <div class="bd">
                 <div class="scrollDv">
                     <div class="scrollbar-inner">
-                        <div class="subtitle" >
-                            <span class="span">배경지도</span>
-                            <select name="baseMapLayer" id="baseMapLayer" title="배경지도종류" class="form-control" >
-                                <option value="Base">기본지도</option>
-                                <option value="gray">회색지도</option>
-                                <option value="midnight">야간지도</option>
-                                <option value="Satellite">영상지도</option>
-                                <option value="Hybrid">영상POI</option>
-                            </select>
-                        </div>
+
                         <ul id="tree1" class="ztree" style="margin-top: 13px;"></ul>
                     </div>
                 </div>
@@ -146,27 +133,6 @@ https://openlayers.org/en/v3.20.1/css/ol.css
         </div>
 
         <div id="lnbmenu4" class="sbmenu">
-            <div class="title">영역 조회</div>
-            <div class="bd">
-                <div class="scrollDv">
-                    <div class="scrollbar-inner">
-                        <div class="subtitle" >
-                            <span class="span">레이어</span>
-                            <select name="baseMapLayer" id="baseMapLayer" title="배경지도종류" class="form-control" >
-                                <option value="Base">기본지도</option>
-                                <option value="gray">회색지도</option>
-                                <option value="midnight">야간지도</option>
-                                <option value="Satellite">영상지도</option>
-                                <option value="Hybrid">영상POI</option>
-                            </select>
-                        </div>
-                        <ul id="tree1" class="ztree" style="margin-top: 13px;"></ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="lnbmenu5" class="sbmenu">
             <div class="title">경로검색</div>
             <div class="bd">
                 <ul class="search_result" id="route_result">
@@ -357,6 +323,14 @@ https://openlayers.org/en/v3.20.1/css/ol.css
         }
             
     }
+
+
+    $(function(){
+        triggerChk('tree1_2');
+        triggerChk('tree1_3');
+        triggerChk('tree1_4');
+        triggerChk('tree1_5');
+    }) 
 </script>
 </body>
 </html>

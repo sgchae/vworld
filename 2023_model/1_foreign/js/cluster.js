@@ -83,7 +83,7 @@ let cluster = function(sv,tid){
             
             //클러스터 설정  distance 로 거리 설정
             let clusterSource = new ol.source.Cluster({
-                distance: parseInt(10, 10),
+                distance: 40,
                 source: vectorSource
             });
             
@@ -110,7 +110,7 @@ let cluster = function(sv,tid){
                     }else{
 
                         ci = new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
-                            anchor: [0.5, 46],
+                            anchor: [0.5, 26],
                             anchorXUnits: 'fraction',
                             anchorYUnits: 'pixels',
                             src: ic
@@ -202,6 +202,10 @@ let cluster = function(sv,tid){
      
 
 }
+
+var triggerChk = function(value){
+    $(`#${value}_check`).trigger('click')
+  }
  
 let move = function(x,y){//127.10153, 37.402566
     map.getView().setCenter(ol.proj.transform([ x, y ],'EPSG:4326', "EPSG:900913")); // 지도 이동
