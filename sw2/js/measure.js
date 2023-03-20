@@ -41,8 +41,12 @@ function setMeasureLine(){
 
     handlerClick.setInputAction(function(click) {
         var mousePosition = new Cesium.Cartesian2(click.position.x, click.position.y);
-        var cartesian = viewer.camera.pickEllipsoid(mousePosition, ellipsoid);
-        if (cartesian) {
+        var cartesian2 = viewer.camera.pickEllipsoid(mousePosition, ellipsoid);
+
+        const cartesian = scene.pickPosition(click.position);
+        if (Cesium.defined(cartesian)) {
+
+        //if (cartesian) {
             var point = new Point(cartesian);
             point.addPoint();
             points.push(point);
@@ -93,27 +97,41 @@ function setMeasureLine(){
     }
     
     function getDistanceString(point1, point2) {
+        console.log("p1 = "+point1+" 과 p2="+point2 +" 거리")
         geodesic.setEndPoints(point1.cartographic, point2.cartographic);
-        var meters = Math.round(geodesic.surfaceDistance);
+
+        //두점 간 거리
+        var meters = parseFloat(geodesic.surfaceDistance).toFixed(3);
+
+        // 두 지점의 고도 차이
+        var heightDifference = Math.abs(point1.height - point2.height);
+
+        // 두 지점 간의 거리에 고도 차이를 반영하여 최종 거리 값을 계산합니다.
+        var finalDistance = Math.sqrt(meters * meters + heightDifference * heightDifference);
+
+
         if (meters >= 1000) {
-            return (meters / 1000).toFixed(1) + ' km';
+            return (meters / 1000).toFixed(3) + ' km , 높이 반영 거리 : ' + (finalDistance / 1000).toFixed(3)+ ' km' ;
         }
-        return meters + ' m';
+        return meters + ' m , 높이 반영 거리 :' + finalDistance.toFixed(3)+ ' m' ;
     }
     
     function Point(cartesian) {
         this.cartographic = ellipsoid.cartesianToCartographic(cartesian);
+        //const cartographic = Cesium.Cartographic.fromCartesian(cartesian)
+
         this.longitude = parseFloat(Cesium.Math.toDegrees(this.cartographic.longitude).toFixed(8));
         this.latitude = parseFloat(Cesium.Math.toDegrees(this.cartographic.latitude).toFixed(8));
+        this.height =  parseFloat(this.cartographic.height).toFixed(8);
         this.addPoint = function() {
             viewer.entities.add({
                 name: 'Orange point',
-                position : Cesium.Cartesian3.fromDegrees(this.longitude, this.latitude),
+                position : Cesium.Cartesian3.fromDegrees(this.longitude, this.latitude,this.height),
                 point : {
-                    pixelSize : 4,
+                    pixelSize : 7,
                     color : Cesium.Color.ORANGE
                     ,clampToGround: true
-                    ,heightReference : Cesium.HeightReference.RELATIVE_TO_GROUND
+                    //,heightReference : Cesium.HeightReference.RELATIVE_TO_GROUND
                 }
                 
             });
@@ -125,7 +143,7 @@ function setMeasureLine(){
 
 //초기화 제어 변수 
 var resetArea = false;
-
+//면적재기
 function setMeasureArea(){
     var positions = [];
     var longlang = [];
@@ -142,11 +160,14 @@ function setMeasureArea(){
     setMeasureLine();//라인그리기도 켜기
     var handlerClickM =  new Cesium.ScreenSpaceEventHandler(scene.canvas);
     handlerClickM.setInputAction(function (click) {
-        var cartesian = viewer.camera.pickEllipsoid(click.position, scene.globe.ellipsoid);
+        const cartesian = scene.pickPosition(click.position);
+//       var cartesian = viewer.camera.pickEllipsoid(click.position, scene.globe.ellipsoid);
+
         var cartographic = Cesium.Cartographic.fromCartesian(cartesian);
         var longitude = Cesium.Math.toDegrees(cartographic.longitude);
         var latitude = Cesium.Math.toDegrees(cartographic.latitude);
-        var position = Cesium.Cartesian3.fromDegrees(longitude, latitude);
+        var height = cartographic.height;
+        var position = Cesium.Cartesian3.fromDegrees(longitude, latitude, height);
         positions.push(position);
         longlang.push([longitude,latitude])
 
@@ -198,7 +219,7 @@ function setMeasureArea(){
             
             viewer.entities.add({
                 id:"measure-area",
-                position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
+                position: Cesium.Cartesian3.fromDegrees(longitude, latitude,height),
                 label: {
                     //text: "Area: " + Cesium.Cartesian3.fromDegreesArrayHeights(positions).toString() + " (" + (Cesium.Math.toDegrees(Cesium.Cartesian3.computePolygonArea(Cesium.Cartesian3.fromDegreesArray(positions))) * 111000 * 111000).toFixed(2) + " m²)",
                     text:  "Area: " + resultarea ,
